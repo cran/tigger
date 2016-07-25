@@ -6,7 +6,7 @@ data(sample_db, germline_ighv)
 
 ## ---- eval=TRUE, warning=FALSE-------------------------------------------
 # Detect novel alleles
-novel_df = findNovelAlleles(sample_db, germline_ighv)
+novel_df = findNovelAlleles(sample_db, germline_ighv, nproc=1)
 # Extract and view the rows that contain successful novel allele calls
 novel = selectNovel(novel_df)
 glimpse(novel)

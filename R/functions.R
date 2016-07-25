@@ -30,7 +30,6 @@
 #' @param    germline_min   the minimum number of sequences that must have a
 #'                          particular germline allele call for the allele to
 #'                          be analyzed
-#' @param    nproc          the number of processors to use
 #' @param    auto_mutrange  if \code{TRUE}, the algorithm will attempt to
 #'                          determine the appropriate mutation range
 #'                          automatically using the mutation count of the most
@@ -53,6 +52,8 @@
 #' @param    min_frac       the minimum fraction of sequences that must have
 #'                          usable nucleotides in a given position for that
 #'                          position to considered
+#' @param    nproc          the number of processors to use
+#'
 #' @return   a \code{data.frame} with a row for each known allele analyzed.
 #' Besides metadata on the the parameters used in the search, each row will have
 #' either a note as to where the polymorphism-finding algorithm exited or a
@@ -74,7 +75,6 @@
 #' @export
 findNovelAlleles  <- function(clip_db, germline_db,
                               germline_min = 200,
-                              nproc = 4,
                               min_seqs = 50,
                               auto_mutrange = TRUE,
                               mut_range = 1:10,
@@ -82,7 +82,8 @@ findNovelAlleles  <- function(clip_db, germline_db,
                               y_intercept = 0.125,
                               alpha = 0.05,
                               j_max = 0.15,
-                              min_frac = 0.75){
+                              min_frac = 0.75,
+                              nproc = 1) {
   . = a = NULL
   # Keep only the columns we need and clean up the sequences
   missing = c("SEQUENCE_IMGT", "V_CALL", "J_CALL", "JUNCTION_LENGTH") %>%
@@ -128,7 +129,7 @@ findNovelAlleles  <- function(clip_db, germline_db,
   if(nproc == 1) {
     registerDoSEQ()
   } else {
-    cluster <- makeCluster(nproc, type = "SOCK")
+    cluster <- parallel::makeCluster(nproc, type="PSOCK")
     clusterExport(cluster, list("allele_groups",
                                 "germlines",
                                 "clip_db",
@@ -391,9 +392,9 @@ selectNovel <- function(novel_df, keep_alleles=FALSE) {
     novel_df = novel_df %>% group_by_(~GERMLINE_CALL)
   }
   novel = novel_df %>%
-    distinct_(~NOVEL_IMGT) %>%
+    distinct_(~NOVEL_IMGT, .dots=list(), .keep_all = TRUE) %>%
     filter_(~nchar(NOVEL_IMGT) > 2)
-  return(novel)
+  return(ungroup(novel))
 }
 
 #' Visualize evidence of novel V alleles
@@ -1112,7 +1113,9 @@ getMutCount <- function(samples, allele_calls, germline_db){
 #' data(sample_db)
 #'
 #' # Find which of the sample alleles are unmutated
-#' findUnmutatedCalls(sample_db$V_CALL, sample_db$SEQUENCE_IMGT, germline_ighv)
+#' calls <- findUnmutatedCalls(sample_db$V_CALL, sample_db$SEQUENCE_IMGT, 
+#'          germline_db=germline_ighv)
+#' head(calls)
 #' 
 #' @export
 findUnmutatedCalls <- function(allele_calls, sample_seqs, germline_db){
@@ -1206,13 +1209,12 @@ getPopularMutationCount <- function(sample_db, germline_db, gene_min = 1e-03,
     group_by_(~V_GENE, ~V_SEQUENCE_IMGT) %>%
     mutate_(V_SEQUENCE_IMGT_N = ~n()) %>%
     # Count occurence of each gene and determine count of most common sequence
-    group_by_(~V_GENE) %>%
     mutate_(V_GENE_N = ~n()) %>%
     mutate_(V_SEQUENCE_IMGT_N_MAX = ~max(V_SEQUENCE_IMGT_N)) %>%
     # Remove rare V genes, rare sequences, and sequences not making up a
     # sufficient proportion of sequences as compared to the most common
     ungroup %>%
-    distinct_(~V_SEQUENCE_IMGT) %>%
+    distinct_(~V_SEQUENCE_IMGT, .keep_all = TRUE) %>%
     filter_(~V_GENE_N >= (nrow(sample_db)*gene_min)) %>%
     filter_(~V_SEQUENCE_IMGT_N >= seq_min) %>%
     mutate_(V_SEQUENCE_IMGT_P_MAX = ~V_SEQUENCE_IMGT_N/V_SEQUENCE_IMGT_N_MAX) %>%
@@ -1222,6 +1224,9 @@ getPopularMutationCount <- function(sample_db, germline_db, gene_min = 1e-03,
                                modified_db$V_CALL,
                                germline_db) %>% 
     sapply(function(x) min(unlist(x)))
+  if (length(MUTATION_COUNT)==0){
+    MUTATION_COUNT = integer(0)
+  }
   merged_db = bind_cols(modified_db, data.frame(MUTATION_COUNT))
   # Strip down the data frame before returning it
   if (!full_return) {
