@@ -1,9 +1,9 @@
-9c67a2459f94c0f40172d9f37c189bba *DESCRIPTION
-56396c469d95f92d8b85704691049862 *NAMESPACE
-793b48473d2991fab403f597cc650f6a *NEWS.md
+b9f5ade7c57ac2b89632fba373576efb *DESCRIPTION
+662dfe07a8af172edd4c638c995d468f *NAMESPACE
+08bbd6901199d55a9846fe709132885b *NEWS.md
 cf81dc763706d5af4b6338587de99e07 *R/data.R
 1184fa7014c09f235cf2c817660e8cc2 *R/functions.R
-50ebebe32bbcc7152a7ce57de5af82c9 *R/tigger.R
+d48050f67b8d3cc30cb0e8c8fafe654b *R/tigger.R
 466a50a4cfefaab3453bb071a558d4ea *README.md
 d20b8d941c05503905b0de7ede686751 *build/vignette.rds
 895ced14d12f95482b10d7ea7006c5e7 *data/genotype.rda
@@ -13,7 +13,7 @@ e6bf4ae95811336b57a6a4c161d84b49 *data/germline_ighv.rda
 f583d985a55139b60dcb1ac01f820d86 *inst/CITATION
 6213b5f0da125b2a558a2ee2f0d07a20 *inst/doc/Tigger-Vignette.R
 e07b28e948fad1020b7eea6a46d8a3f4 *inst/doc/Tigger-Vignette.Rmd
-5a51a7f1b45272c420be283f9b21aecb *inst/doc/Tigger-Vignette.pdf
+dd0520d330b502dc325364409fa5bc18 *inst/doc/Tigger-Vignette.pdf
 4f652fec7280c111353bfe7cd638a3ce *inst/markr/build.R
 f752225f6b09e31c6b6e46f7265e86f3 *inst/staticdocs/index.R
 c784abb30b68d41039e4dbb3d319b909 *man/cleanSeqs.Rd
