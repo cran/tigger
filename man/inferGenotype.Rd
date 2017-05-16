@@ -82,4 +82,3 @@ inferGenotype(sample_db, find_unmutated = TRUE, germline_db = germline_ighv,
 \link{plotGenotype} for a colorful visualization and
          \link{genotypeFasta} to convert the genotype to nucleotide sequences.
 }
-

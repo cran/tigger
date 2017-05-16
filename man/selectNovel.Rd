@@ -35,4 +35,3 @@ data(novel_df)
 novel = selectNovel(novel_df)
 
 }
-

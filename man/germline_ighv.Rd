@@ -18,4 +18,3 @@ research and prognostication in chronic lymphocytic leukaemia.
 \emph{Immunogenetics}. 67(1):61-6.
 }
 \keyword{data}
-

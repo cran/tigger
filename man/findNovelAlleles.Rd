@@ -28,7 +28,7 @@ determine the appropriate mutation range
 automatically using the mutation count of the most
 common sequence assigned to each allele analyzed}
 
-\item{mut_range}{the range of mutations that sampled may carry and
+\item{mut_range}{the range of mutations that samples may carry and
 be considered by the algorithm}
 
 \item{pos_range}{the range of IMGT-numbered positions that should be
@@ -95,4 +95,3 @@ novel alleles hypothesized to be present in the data and
 \link{inferGenotype} to determine if the novel alleles are frequent
 enought to be included in the subject's genotype
 }
-

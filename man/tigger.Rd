@@ -55,9 +55,9 @@ mutations. The purpose of TIgGER is to address these issues.
   \item  \link{cleanSeqs}:          Standardize sequence format
 }
 }
+
 \references{
 Gadala-Maria \emph{et al}. (2015) Automated analysis of
 high-throughput B cell sequencing data reveals a high frequency of novel
 immunoglobulin V gene segment alleles. \emph{PNAS}. 112(8):E862-70.
 }
-

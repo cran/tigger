@@ -28,4 +28,3 @@ cleanSeqs(seqs)
 \link{sortAlleles} and \link{updateAlleleNames} can
          help format a list of allele names.
 }
-

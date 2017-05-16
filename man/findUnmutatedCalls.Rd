@@ -33,7 +33,5 @@ data(sample_db)
 # Find which of the sample alleles are unmutated
 calls <- findUnmutatedCalls(sample_db$V_CALL, sample_db$SEQUENCE_IMGT, 
          germline_db=germline_ighv)
-head(calls)
 
 }
-

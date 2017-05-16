@@ -51,4 +51,3 @@ plotGenotype(geno_sub, facet_by="SUBJECT", gene_sort="pos")
 \seealso{
 \link{inferGenotype}
 }
-

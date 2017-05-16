@@ -44,4 +44,3 @@ data(germline_ighv)
 #getMutCount(sample_seqs, sample_alleles, germline_ighv)
 
 }
-

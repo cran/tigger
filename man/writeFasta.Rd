@@ -27,4 +27,3 @@ format.
 \seealso{
 \link{readIgFasta} to do the inverse.
 }
-

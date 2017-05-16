@@ -1,5 +1,19 @@
-Version 0.2.7: August 26, 2016
+Version 0.2.9.999 May 16, 2017
 -------------------------------------------------------------------------------
+
++ Bugfix wherein `inferGenotype` would break if all sequences submitted were
+  from a single gene and `find_unmutated` was set to `TRUE`.
+
+Version 0.2.9: March 24, 2017
+-------------------------------------------------------------------------------
+
++ License changed to Creative Commons Attribution-ShareAlike 4.0 International
+(CC BY-SA 4.0).
+
+
+Version 0.2.8: August 26, 2016
+-------------------------------------------------------------------------------
+
 + Bugfix following recent update of alakazam (0.2.5) to import selectively.
 + Removed unneeded dependency on shazam package (not needed as of 0.2.5.999).
 

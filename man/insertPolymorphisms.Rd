@@ -25,4 +25,3 @@ provided sequence.
 insertPolymorphisms("hugged", c(1,6,2), c("t","r","i")) 
 
 }
-

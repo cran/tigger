@@ -42,4 +42,3 @@ sortAlleles(alleles, method="pos")
 Like \code{sortAlleles}, \link{updateAlleleNames} can help
          format a list of allele names.
 }
-

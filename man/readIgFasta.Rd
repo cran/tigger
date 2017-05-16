@@ -25,4 +25,3 @@ sequences and returns a named vector of those sequences.
 \seealso{
 \link{writeFasta} to do the inverse.
 }
-

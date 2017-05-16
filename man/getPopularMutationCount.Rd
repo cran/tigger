@@ -43,4 +43,3 @@ getPopularMutationCount(sample_db, germline_ighv)
 \link{getMutatedPositions} can be used to find which positions
          of a set of sequences are mutated.
 }
-

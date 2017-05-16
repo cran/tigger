@@ -39,4 +39,3 @@ genotype_seqs = genotypeFasta(genotype, germline_ighv, novel_df)
 \seealso{
 \link{inferGenotype}
 }
-

@@ -60,4 +60,3 @@ V_CALL_GENOTYPED = reassignAlleles(sample_db, genotype_seqs)
 sample_db = cbind(sample_db, V_CALL_GENOTYPED)
 
 }
-

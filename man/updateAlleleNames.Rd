@@ -40,4 +40,3 @@ prognostication in chronic lymphocytic leukaemia. Immunogenetics. 67(1):61-6
 Like \code{updateAlleleNames}, \link{sortAlleles} can help
          format a list of allele names.
 }
-

@@ -34,7 +34,7 @@
 #'                          determine the appropriate mutation range
 #'                          automatically using the mutation count of the most
 #'                          common sequence assigned to each allele analyzed
-#' @param    mut_range      the range of mutations that sampled may carry and
+#' @param    mut_range      the range of mutations that samples may carry and
 #'                          be considered by the algorithm
 #' @param    pos_range      the range of IMGT-numbered positions that should be
 #'                          considered by the algorithm
@@ -110,10 +110,10 @@ findNovelAlleles  <- function(clip_db, germline_db,
   names(allele_groups) = names(germlines)
   allele_groups = allele_groups[sapply(allele_groups, length) >= cutoff]
   if(length(allele_groups) == 0){
-    paste("Not enough sample sequences were assigned to any germline:\n",
+    stop_message <- paste("Not enough sample sequences were assigned to any germline:\n",
           " (1) germline_min is too large or\n",
-          " (2) sequences names don't match germlines.") %>%
-      stop()
+          " (2) sequences names don't match germlines.")
+      stop(stop_message)
   }
   allele_groups = allele_groups[sortAlleles(names(allele_groups))]
   
@@ -202,7 +202,7 @@ findNovelAlleles  <- function(clip_db, germline_db,
       df_run$MUT_MAX[1] = mut_max
       
       # If no sequence is frequent enough to pass the J test, give up now
-      if(length(gpm) < 1) {
+      if(nrow(gpm) < 1) {
         df_run$NOTE[1] = "Plurality sequence too rare."
         if(mut_mins[1] == mut_min){
           return(df_run)
@@ -299,7 +299,7 @@ findNovelAlleles  <- function(clip_db, germline_db,
         mutate_(FRACTION = ~COUNT/sum(COUNT)) %>%
         summarise_(TOTAL_COUNT = ~sum(COUNT), MAX_FRAC = ~max(FRACTION))
         
-      if(nrow(db_y_summary0) < 1){
+        if(nrow(db_y_summary0) < 1){
         df_run$NOTE[1] = paste("Position(s) passed y-intercept (",
                                paste(pass_y$POSITION, collapse = ","),
                                ") but no unmutated versions of novel allele",
@@ -311,18 +311,35 @@ findNovelAlleles  <- function(clip_db, germline_db,
         }
       }
       
-      db_y_summary = db_y_summary0 %>%
-        filter_(~TOTAL_COUNT >= min_seqs & MAX_FRAC <= j_max)
+      # db_y_summary = db_y_summary0 %>%
+      #   filter_(~TOTAL_COUNT >= min_seqs & MAX_FRAC <= j_max)
+      
+      min_seqs_pass <- db_y_summary0$TOTAL_COUNT >= min_seqs
+      j_max_pass <- db_y_summary0$MAX_FRAC <= j_max
+
+      db_y_summary <- db_y_summary0[min_seqs_pass & j_max_pass, , drop=FALSE]
       
       if(nrow(db_y_summary) < 1){
+        msg <- c(NA, NA)
+        names(msg) <- c("j_max", "min_seqs")
+
+        if (sum(min_seqs_pass) == 0) {
+            msg['min_seqs'] <- paste0("not enough sequences (maximum total count is ",
+                                      max(db_y_summary0$TOTAL_COUNT),
+                                      ")")
+        }
+        
+        if (sum(j_max_pass) == 0) {
+            msg['j_max'] <- paste0("a J-junction combination is too prevalent (",
+          round(100*max(db_y_summary0$MAX_FRAC),1),"% of sequences)")
+        }
+        
+        msg <- paste(na.omit(msg), collapse=" and ")
         df_run$NOTE[1] = paste("Position(s) passed y-intercept (",
-                               paste(pass_y$POSITION, sep = ","),
-                               ") but a ",
-                               "J-junction combination is too prevalent (",
-                               round(100*max(db_y_summary0$MAX_FRAC),1),
-                               "% of sequences).",
-                               sep="")
-        df_run$PERFECT_MATCH_COUNT = max(db_y_summary0$TOTAL_COUNT)
+                               paste(pass_y$POSITION, collapse = ","),
+                               ") but ",
+                               msg,".", sep="")
+        df_run$PERFECT_MATCH_COUNT[1] = max(db_y_summary0$TOTAL_COUNT)
         if(mut_mins[1] == mut_min){
           return(df_run)
         } else {
@@ -351,7 +368,7 @@ findNovelAlleles  <- function(clip_db, germline_db,
         df_run$POLYMORPHISM_CALL[1] = names(germ)
         df_run$NOVEL_IMGT[1] =  as.character(germ)
         df_run$PERFECT_MATCH_COUNT[1] = db_y_summary$TOTAL_COUNT[r]
-        df_run$NOTE = "Novel allele found!"
+        df_run$NOTE[1] = "Novel allele found!"
       }
       
     } # end for each starting mutation counts
@@ -695,8 +712,8 @@ inferGenotype <- function(clip_db, fraction_to_explain = 0.875,
   if(find_unmutated == TRUE){
     seqs = genotypeFasta(geno, germline_db)
     dist_mat = seqs %>%
-      sapply(function(x) sapply((getMutatedPositions(seqs, x)), length))
-    rownames(dist_mat) = colnames(dist_mat)
+      sapply(function(x) sapply((getMutatedPositions(seqs, x)), length)) %>%
+      as.matrix
     for (i in 1:nrow(dist_mat)){ dist_mat[i,i] = NA }
     same = which(dist_mat == 0, arr.ind=TRUE)
     if (nrow(same) > 0 ) {
@@ -1115,7 +1132,6 @@ getMutCount <- function(samples, allele_calls, germline_db){
 #' # Find which of the sample alleles are unmutated
 #' calls <- findUnmutatedCalls(sample_db$V_CALL, sample_db$SEQUENCE_IMGT, 
 #'          germline_db=germline_ighv)
-#' head(calls)
 #' 
 #' @export
 findUnmutatedCalls <- function(allele_calls, sample_seqs, germline_db){

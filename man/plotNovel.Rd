@@ -33,4 +33,3 @@ novel = selectNovel(novel_df)
 plotNovel(sample_db, novel[1,])
 
 }
-

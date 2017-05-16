@@ -40,4 +40,3 @@ ref = "GATAGATA"
 getMutatedPositions(seqs, ref)
 
 }
-
