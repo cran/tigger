@@ -1,27 +1,29 @@
 ## ---- eval=TRUE, message=FALSE, warning=FALSE----------------------------
 library(tigger)
 library(dplyr)
-# Load example Rep-Seq data and example germline database
+# Load example sequence data and example germline database
 data(sample_db, germline_ighv)
 
+## ---- eval=FALSE, warning=FALSE------------------------------------------
+#  # Detect novel alleles
+#  novel_df <- findNovelAlleles(sample_db, germline_ighv, nproc=1)
+
 ## ---- eval=TRUE, warning=FALSE-------------------------------------------
-# Detect novel alleles
-novel_df = findNovelAlleles(sample_db, germline_ighv, nproc=1)
 # Extract and view the rows that contain successful novel allele calls
-novel = selectNovel(novel_df)
-glimpse(novel)
+novel <- selectNovel(novel_df)
+novel[1:3]
 
 ## ---- eval=TRUE, warning=FALSE, fig.width=6, fig.height=8----------------
 # Plot evidence of the first (and only) novel allele from the example data
-plotNovel(sample_db, novel[1,])
+plotNovel(sample_db, novel[1, ])
 
 ## ---- eval=TRUE, warning=FALSE, fig.width=4, fig.height=3----------------
 # Infer the individual's genotype, using only unmutated sequences and checking
 # for the use of the novel alleles inferred in the earlier step.
-geno = inferGenotype(sample_db, find_unmutated = TRUE,
-                     germline_db = germline_ighv, novel_df = novel_df)
+geno <- inferGenotype(sample_db, find_unmutated = TRUE,
+                      germline_db = germline_ighv, novel_df = novel_df)
 # Save the genotype sequences to a vector
-genotype_seqs = genotypeFasta(geno, germline_ighv, novel_df)
+genotype_seqs <- genotypeFasta(geno, germline_ighv, novel_df)
 # Visualize the genotype and sequence counts
 print(geno)
 # Make a colorful visualization. Bars indicate presence, not proportion.
@@ -30,26 +32,26 @@ plotGenotype(geno, text_size = 10)
 
 ## ---- eval=TRUE, warning=FALSE-------------------------------------------
 # Use the personlized genotype to determine corrected allele assignments
-V_CALL_GENOTYPED = reassignAlleles(sample_db, genotype_seqs)
+V_CALL_GENOTYPED <- reassignAlleles(sample_db, genotype_seqs)
 # Append the corrected calls to the original data.frame
-sample_db = bind_cols(sample_db, V_CALL_GENOTYPED)
+sample_db <- bind_cols(sample_db, V_CALL_GENOTYPED)
 
 ## ---- eval=TRUE, warning=FALSE-------------------------------------------
 # Find the set of alleles in the original calls that were not in the genotype
-not_in_genotype = sample_db$V_CALL %>%
+not_in_genotype <- sample_db$V_CALL %>%
   strsplit(",") %>%
   unlist() %>%
   unique() %>%
   setdiff(names(genotype_seqs))
+
 # Determine the fraction of calls that were ambigious before/after correction
 # and the fraction that contained original calls to non-genotype alleles. Note
 # that by design, only genotype alleles are allowed in "after" calls.
-data.frame(
-  Ambiguous = c(mean(grepl(",",sample_db$V_CALL)),
-  mean(grepl(",",sample_db$V_CALL_GENOTYPED))),
-  NotInGenotype = c(mean(sample_db$V_CALL %in% not_in_genotype),
-  mean(sample_db$V_CALL_GENOTYPED %in% not_in_genotype)),
-  row.names = c("Before", "After")
-  ) %>% t() %>% round(3)
+data.frame(Ambiguous = c(mean(grepl(",",sample_db$V_CALL)),
+           mean(grepl(",",sample_db$V_CALL_GENOTYPED))),
+           NotInGenotype = c(mean(sample_db$V_CALL %in% not_in_genotype),
+           mean(sample_db$V_CALL_GENOTYPED %in% not_in_genotype)),
+           row.names = c("Before", "After")) %>% 
+    t() %>% round(3)
 
 

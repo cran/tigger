@@ -3,8 +3,8 @@
 # @author     Daniel Gadala-Maria
 # @copyright  Copyright 2016 Kleinstein Lab, Yale University. All rights reserved
 # @license    Creative Commons Attribution-NonCommercial-ShareAlike 4.0 Unported
-# @version    0.2.9.999
-# @date       2017.05.16
+# @version    0.3.0
+# @date       2017.05.29
 
 
 #' tigger
@@ -77,6 +77,7 @@
 #' @import      ggplot2
 #' @importFrom  grid        grid.layout grid.newpage pushViewport viewport
 #' @import      iterators
+#' @importFrom  lazyeval    interp
 #' @import      parallel
 #' 
 NULL

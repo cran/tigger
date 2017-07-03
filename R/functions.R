@@ -213,7 +213,7 @@ findNovelAlleles  <- function(clip_db, germline_db,
       
       # Add a mutation count column and filter out sequences not in our range
       db_subset_mm = mutationRangeSubset(db_subset, germline,
-                                                  mut_min:mut_max, pos_range)
+                                         mut_min:mut_max, pos_range)
       
       if(nrow(db_subset_mm) < germline_min){
         df_run$NOTE[1] = "Insufficient sequences in desired mutational range."
@@ -405,13 +405,18 @@ findNovelAlleles  <- function(clip_db, germline_db,
 #' 
 #' @export
 selectNovel <- function(novel_df, keep_alleles=FALSE) {
-  if (keep_alleles) {
-    novel_df = novel_df %>% group_by_(~GERMLINE_CALL)
-  }
-  novel = novel_df %>%
-    distinct_(~NOVEL_IMGT, .dots=list(), .keep_all = TRUE) %>%
-    filter_(~nchar(NOVEL_IMGT) > 2)
-  return(ungroup(novel))
+    # Remove non-novel rows
+    novel_df = filter_(novel_df, ~!is.na(NOVEL_IMGT))
+        
+    if (keep_alleles) {
+        novel_df = novel_df %>% 
+            group_by_(~GERMLINE_CALL)
+    }
+    novel = novel_df %>%
+        distinct_(~NOVEL_IMGT, .keep_all=TRUE) %>%
+        ungroup()
+
+    return(novel)
 }
 
 #' Visualize evidence of novel V alleles
@@ -714,6 +719,7 @@ inferGenotype <- function(clip_db, fraction_to_explain = 0.875,
     dist_mat = seqs %>%
       sapply(function(x) sapply((getMutatedPositions(seqs, x)), length)) %>%
       as.matrix
+    rownames(dist_mat) = colnames(dist_mat)
     for (i in 1:nrow(dist_mat)){ dist_mat[i,i] = NA }
     same = which(dist_mat == 0, arr.ind=TRUE)
     if (nrow(same) > 0 ) {
