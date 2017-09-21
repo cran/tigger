@@ -27,6 +27,8 @@
 #' @param    clip_db        a \code{data.frame} in Change-O format. See details.
 #' @param    germline_db    a vector of named nucleotide germline sequences
 #'                          matching the V calls in \code{clip_db}
+#' @param    v_call         name of the column in clip_db with V allele calls. 
+#'                          Default is V_CALL.                                                    
 #' @param    germline_min   the minimum number of sequences that must have a
 #'                          particular germline allele call for the allele to
 #'                          be analyzed
@@ -73,7 +75,8 @@
 #' \dontrun{novel_df = findNovelAlleles(sample_db, germline_ighv)}
 #' 
 #' @export
-findNovelAlleles  <- function(clip_db, germline_db,
+findNovelAlleles <- function(clip_db, germline_db,
+                              v_call="V_CALL",
                               germline_min = 200,
                               min_seqs = 50,
                               auto_mutrange = TRUE,
@@ -84,9 +87,14 @@ findNovelAlleles  <- function(clip_db, germline_db,
                               j_max = 0.15,
                               min_frac = 0.75,
                               nproc = 1) {
-  . = a = NULL
+  . = idx = NULL
+  
+  # Keep only the db columns needed
+  clip_db <- clip_db %>% 
+      dplyr::select_('SEQUENCE_IMGT', v_call, 'J_CALL', 'JUNCTION_LENGTH')
+  
   # Keep only the columns we need and clean up the sequences
-  missing = c("SEQUENCE_IMGT", "V_CALL", "J_CALL", "JUNCTION_LENGTH") %>%
+  missing = c("SEQUENCE_IMGT", v_call, "J_CALL", "JUNCTION_LENGTH") %>%
     setdiff(colnames(clip_db))
   if (length(missing) != 0) {
     stop("Could not find required columns in clip_db:\n  ",
@@ -105,7 +113,7 @@ findNovelAlleles  <- function(clip_db, germline_db,
   # Find which rows' calls contain which germline alleles
   cutoff =
     ifelse(germline_min < 1, round(nrow(clip_db)*germline_min), germline_min)
-  allele_groups = sapply(names(germlines), grep, clip_db$V_CALL, fixed=TRUE,
+  allele_groups = sapply(names(germlines), grep, clip_db[[v_call]], fixed=TRUE,
                          simplify=FALSE)
   names(allele_groups) = names(germlines)
   allele_groups = allele_groups[sapply(allele_groups, length) >= cutoff]
@@ -127,10 +135,12 @@ findNovelAlleles  <- function(clip_db, germline_db,
     min(nproc, . - 1) %>%
     max(1, .)
   if(nproc == 1) {
-    registerDoSEQ()
+    foreach::registerDoSEQ()
   } else {
+    cluster_type = ifelse(Sys.info()['sysname'] == "Windows",
+                    "PSOCK", "FORK")
     cluster <- parallel::makeCluster(nproc, type="PSOCK")
-    clusterExport(cluster, list("allele_groups",
+    parallel::clusterExport(cluster, list("allele_groups",
                                 "germlines",
                                 "clip_db",
                                 "min_seqs",
@@ -141,24 +151,28 @@ findNovelAlleles  <- function(clip_db, germline_db,
                                 "alpha",
                                 "j_max",
                                 "germline_min",
-                                "min_frac"), 
-                   envir=environment())
-    clusterEvalQ(cluster, library(tigger))
-    registerDoParallel(cluster)
+                                "min_frac",
+                                "findLowerY",
+                                "mutationRangeSubset",
+                                "positionMutations",
+                                "superSubstring"),
+                  envir=environment())
+    doParallel::registerDoParallel(cluster)
   }
-  
-  df_out <- foreach(a=icount(length(allele_groups)), .combine=rbind) %dopar% {
-    
-    allele_name = names(allele_groups)[a]
-    
+
+  out_list <- foreach(idx=iterators::icount(length(allele_groups))) %dopar% {
+  # out_list <- lapply(1:length(allele_groups), function(idx) {  
+    gc() 
+    # message(paste0("idx=",idx))
     # Subset of data being analyzed
+    allele_name = names(allele_groups)[idx]
     germline = germlines[allele_name]
     indicies = allele_groups[[allele_name]]
-    db_subset = slice_(clip_db, ~indicies)
+    db_subset = clip_db[indicies, ]
     
     # If mutrange is auto, find most popular mutation count and start from there
     gpm = db_subset %>%
-      mutate_(V_CALL = ~allele_name) %>%
+      dplyr::mutate_(V_CALL = ~allele_name) %>%
       getPopularMutationCount(germline,
                               gene_min=0, seq_min=min_seqs,
                               seq_p_of_max=1/8, full_return=TRUE)
@@ -189,13 +203,13 @@ findNovelAlleles  <- function(clip_db, germline_db,
                               J_MAX = j_max,
                               MIN_FRAC = min_frac,
                               stringsAsFactors = FALSE)
-    
     for (mut_min in rev(mut_mins)) {
-      
+      gc()
+      # message(paste0("|-- mut_min=",mut_min))
       if (mut_min == rev(mut_mins)[1]){
         df_run = df_run_empty
       } else {
-        df_run = bind_rows(df_run_empty, df_run)
+        df_run = dplyr::bind_rows(df_run_empty, df_run)
       }
       mut_max = mut_min + diff(range(mut_range))
       df_run$MUT_MIN[1] = mut_min
@@ -230,18 +244,21 @@ findNovelAlleles  <- function(clip_db, germline_db,
       
       # Find positional mut freq vs seq mut count
       pos_muts = pos_db %>%
-        group_by_(~POSITION) %>%
-        mutate_(PASS = ~mean(OBSERVED) >= min_frac) %>%
-        group_by_(~MUT_COUNT, ~POSITION) %>%
-        summarise_(POS_MUT_RATE = ~ mean(MUTATED)*unique(PASS) ) %>% 
-        ungroup()   
+        dplyr::group_by_(~POSITION) %>%
+        dplyr::mutate_(PASS = ~mean(OBSERVED) >= min_frac) %>%
+        dplyr::group_by_(~MUT_COUNT, ~POSITION) %>%
+        dplyr::summarise_(POS_MUT_RATE = ~ mean(MUTATED)*unique(PASS) ) %>% 
+        dplyr::ungroup()   
+      
+      rm(pos_db)
+      gc()
       
       # Calculate y intercepts, find which pass the test
       pass_y = pos_muts %>%
-        group_by_(~POSITION) %>%
-        summarise_(Y_INT_MIN = ~findLowerY(POS_MUT_RATE, MUT_COUNT,
+        dplyr::group_by_(~POSITION) %>%
+        dplyr::summarise_(Y_INT_MIN = ~findLowerY(POS_MUT_RATE, MUT_COUNT,
                                                   mut_min, alpha)) %>%
-        filter_(~Y_INT_MIN > y_intercept)
+        dplyr::filter_(~Y_INT_MIN > y_intercept)
       
       if(nrow(pass_y) < 1){
         df_run$NOTE[1] = "No positions pass y-intercept test."
@@ -259,13 +276,13 @@ findNovelAlleles  <- function(clip_db, germline_db,
       # Find the potential SNP positions and remove anything that matches
       # the germline at all those positions or any combo that is too rare
       db_y_subset_mm = db_subset_mm %>%
-        group_by(1:n()) %>%
-        mutate_(SNP_STRING = ~superSubstring(SEQUENCE_IMGT,
+        dplyr::group_by(1:n()) %>%
+        dplyr::mutate_(SNP_STRING = ~superSubstring(SEQUENCE_IMGT,
                                                     pass_y$POSITION)) %>%
-        filter_(~SNP_STRING != gl_substring) %>%
-        group_by_(~SNP_STRING) %>%
-        mutate_(STRING_COUNT = ~n()) %>%
-        filter_(~STRING_COUNT >= min_seqs)
+        dplyr::filter_(~SNP_STRING != gl_substring) %>%
+        dplyr::group_by_(~SNP_STRING) %>%
+        dplyr::mutate_(STRING_COUNT = ~n()) %>%
+        dplyr::filter_(~STRING_COUNT >= min_seqs)
       
       if (nrow(db_y_subset_mm) < 1 ){
         df_run$NOTE[1] = paste("Position(s) passed y-intercept (",
@@ -291,13 +308,13 @@ findNovelAlleles  <- function(clip_db, germline_db,
       # junction length for each of the SNP strings, and then check to
       # see which pass the j/junction and count requirements
       db_y_summary0 = db_y_subset_mm %>%
-        filter_(~MUT_COUNT_MINUS_SUBSTRING == 0) %>%
-        mutate_(J_GENE = ~getGene(J_CALL)) %>%
-        group_by_(~SNP_STRING, ~J_GENE, ~JUNCTION_LENGTH) %>%
-        summarise_(COUNT = ~n()) %>%
-        group_by_(~SNP_STRING) %>%
-        mutate_(FRACTION = ~COUNT/sum(COUNT)) %>%
-        summarise_(TOTAL_COUNT = ~sum(COUNT), MAX_FRAC = ~max(FRACTION))
+        dplyr::filter_(~MUT_COUNT_MINUS_SUBSTRING == 0) %>%
+        dplyr::mutate_(J_GENE = ~getGene(J_CALL)) %>%
+        dplyr::group_by_(~SNP_STRING, ~J_GENE, ~JUNCTION_LENGTH) %>%
+        dplyr::summarise_(COUNT = ~n()) %>%
+        dplyr::group_by_(~SNP_STRING) %>%
+        dplyr::mutate_(FRACTION = ~COUNT/sum(COUNT)) %>%
+        dplyr::summarise_(TOTAL_COUNT = ~sum(COUNT), MAX_FRAC = ~max(FRACTION))
         
         if(nrow(db_y_summary0) < 1){
         df_run$NOTE[1] = paste("Position(s) passed y-intercept (",
@@ -350,7 +367,7 @@ findNovelAlleles  <- function(clip_db, germline_db,
       germ_nts = unlist(strsplit(gl_substring,""))
       for (r in 1:nrow(db_y_summary)) {
         if (r > 1){
-          df_run = bind_rows(df_run[1,], df_run)
+          df_run = dplyr::bind_rows(df_run[1,], df_run)
         }
         # Create the new germline
         snp_nts = unlist(strsplit(db_y_summary$SNP_STRING[r],""))
@@ -373,9 +390,14 @@ findNovelAlleles  <- function(clip_db, germline_db,
       
     } # end for each starting mutation counts
     return(df_run)
+    
   } # end foreach allele
+  
   if(nproc > 1) { stopCluster(cluster) }
-  return(df_out)
+  rm(clip_db)
+  gc()
+  out_df <- dplyr::bind_rows(out_list)
+  return(out_df)
 }
 
 #' Select rows containing novel alleles
@@ -429,7 +451,9 @@ selectNovel <- function(novel_df, keep_alleles=FALSE) {
 #' @param    novel_df_row   a single row from a data frame as output by
 #'                          \link{findNovelAlleles} that contains a
 #'                          polymorphism-containing germline allele
-#' @param    ncol           number of columns to use when laying out the plots            
+#' @param    ncol           number of columns to use when laying out the plots  
+#' @param    v_call         name of the column in \code{clip_db} with V allele
+#'                          calls. Default is "V_CALL"
 #' @return   NULL
 #' 
 #' @examples
@@ -445,7 +469,7 @@ selectNovel <- function(novel_df, keep_alleles=FALSE) {
 #' plotNovel(sample_db, novel[1,])
 #' 
 #' @export
-plotNovel <- function(clip_db, novel_df_row, ncol = 1){
+plotNovel <- function(clip_db, novel_df_row, ncol = 1, v_call="V_CALL"){
   . = NULL
     
   # Use the data frame
@@ -458,6 +482,7 @@ plotNovel <- function(clip_db, novel_df_row, ncol = 1){
       novel_imgt = novel_df_row$NOVEL_IMGT
       names(novel_imgt) = novel_df_row$POLYMORPHISM_CALL
       min_frac = novel_df_row$MIN_FRAC
+      note = novel_df_row$NOTE
     } else {
       stop("novel_df_row is not a data frame with only one row.")
     }
@@ -470,10 +495,15 @@ plotNovel <- function(clip_db, novel_df_row, ncol = 1){
   # have an appropriate range of mutations, and find the mutation
   # frequency of each position
   db_subset = clip_db %>%
-    select_(~SEQUENCE_IMGT, ~V_CALL, ~J_CALL, ~JUNCTION_LENGTH) %>%
-    filter_(~grepl(names(germline), V_CALL, fixed=TRUE))
+    select_(~SEQUENCE_IMGT, v_call, ~J_CALL, ~JUNCTION_LENGTH) %>%
+    filter_(~grepl(names(germline),  clip_db[[v_call]], fixed=TRUE))
   pos_db = db_subset %>%  
-    mutationRangeSubset(germline, mut_range, pos_range) %>%
+    mutationRangeSubset(germline, mut_range, pos_range)
+  if (nrow(pos_db) == 0) {
+      warning("Insufficient sequences in desired mutational range")
+      return (invisible(NULL))
+  }
+  pos_db <- pos_db %>%
     positionMutations(germline, pos_range)
   pos_muts = pos_db %>%
     group_by_(~POSITION) %>%
@@ -490,6 +520,14 @@ plotNovel <- function(clip_db, novel_df_row, ncol = 1){
     gsub("[0-9]+.", "", .)
   p_y_t = unlist(strsplit(names(novel_imgt), "_"))[-1] %>%
     gsub(".[0-9]+", "", .)
+  # Parse the note to find positions that passed y intercept if no novel found
+  if(length(pass_y) == 0 & grepl("Position\\(s\\) passed y-intercept", note)){
+    pass_y = note %>% gsub("Position\\(s\\) passed y-intercept \\(", "", .) %>%
+      gsub("\\).*", "", .) %>% strsplit(",") %>% unlist %>% as.numeric
+    p_y_f = sapply(pass_y, function (x) substring(germline, x, x))
+    p_y_t = gsub(".", "?", p_y_f)
+  }
+
   to_from = paste(paste("Position", pass_y), paste(paste(p_y_f, "->"), p_y_t))
   names(to_from) = pass_y
   pos_muts = pos_muts %>%
@@ -513,32 +551,63 @@ plotNovel <- function(clip_db, novel_df_row, ncol = 1){
   pos_muts$GERMLINE = names(germline)
   
   # MAKE THE FIRST PLOT
-  POLYCOLORS = setNames(DNA_COLORS[c(4,3)], c("False", "True"))
-  p1 = ggplot(pos_muts, aes_(~factor(MUT_COUNT), ~POS_MUT_RATE, group=~POSITION,
-                            color=~Polymorphic)) +
-    geom_line(size = 0.75) +
-    facet_grid(GERMLINE ~ .) +
-    scale_color_manual(values = POLYCOLORS) +
-    ylim(0,1) +
-    xlab("Mutation Count (Sequence)") +
-    ylab("Mutation Frequency (Position)") +
-    theme_bw() +
-    theme(legend.position=c(0.5,0.9), legend.justification=c(0.5,1),
-          legend.background=element_rect(fill = "transparent")) +
-    guides(color = guide_legend(ncol = 2, reverse = TRUE))
+  if(!is.na(novel_imgt)){
+    POLYCOLORS = setNames(DNA_COLORS[c(4,3)], c("False", "True"))
+    p1 = ggplot(pos_muts, aes_(~factor(MUT_COUNT), ~POS_MUT_RATE, group=~POSITION,
+                               color=~Polymorphic)) +
+      geom_line(size = 0.75) +
+      facet_grid(GERMLINE ~ .) +
+      scale_color_manual(values = POLYCOLORS) +
+      ylim(0,1) +
+      xlab("Mutation Count (Sequence)") +
+      ylab("Mutation Frequency (Position)") +
+      theme_bw() +
+      theme(legend.position=c(0.5,0.9), legend.justification=c(0.5,1),
+            legend.background=element_rect(fill = "transparent")) +
+      guides(color = guide_legend(ncol = 2, reverse = TRUE))
+  } else{
+    POLYCOLORS = setNames(DNA_COLORS[c(4,2)], c("False", "True"))
+    p1 = ggplot(pos_muts, aes_(~factor(MUT_COUNT), ~POS_MUT_RATE, group=~POSITION,
+                               color=~Polymorphic)) +
+      geom_line(size = 0.75) +
+      facet_grid(GERMLINE ~ .) +
+      scale_color_manual(values = POLYCOLORS) +
+      ylim(0,1) +
+      xlab("Mutation Count (Sequence)") +
+      ylab("Mutation Frequency (Position)") +
+      theme_bw() +
+      theme(legend.position=c(0.5,0.9), legend.justification=c(0.5,1),
+            legend.background=element_rect(fill = "transparent")) +
+      guides(color = guide_legend("Passed y-intercept test",
+                                  ncol = 2, reverse = TRUE))
+  }
   # MAKE THE SECOND PLOT
-  p2 = ggplot(mutate_(filter_(pos_db, ~POSITION %in% pass_y),
-                     POSITION = ~to_from[as.character(POSITION)]),
-              aes_(~factor(MUT_COUNT), fill=~NT)) +
-    geom_bar(width=0.9) +
-    guides(fill = guide_legend("Nucleotide", ncol = 4)) +
-    facet_grid(POSITION ~ .) +
-    xlab("Mutation Count (Sequence)") + ylab("Sequence Count") +
-    scale_fill_manual(values = DNA_COLORS, breaks=names(DNA_COLORS),
-                      drop=FALSE) +
-    theme_bw() +
-    theme(legend.position=c(1,1), legend.justification=c(1,1),
-          legend.background=element_rect(fill = "transparent"))
+  p2_data = mutate_(filter_(pos_db, ~POSITION %in% pass_y),
+                    POSITION = ~to_from[as.character(POSITION)])
+  if (nrow(p2_data)) {
+    p2 = ggplot(p2_data,
+                aes_(~factor(MUT_COUNT), fill=~NT)) +
+      geom_bar(width=0.9) +
+      guides(fill = guide_legend("Nucleotide", ncol = 4)) +
+      facet_grid(POSITION ~ .) +
+      xlab("Mutation Count (Sequence)") + ylab("Sequence Count") +
+      scale_fill_manual(values = DNA_COLORS, breaks=names(DNA_COLORS),
+                        drop=FALSE) +
+      theme_bw() +
+      theme(legend.position=c(1,1), legend.justification=c(1,1),
+            legend.background=element_rect(fill = "transparent"))
+  } else {
+    p2_data = mutate_(filter_(pos_db,
+                      ~POSITION %in% names(which.max(table(pos_db$POSITION)))),
+                      POSITION = ~"No positions pass y-intercept test.")
+    p2 = ggplot(p2_data, aes_(~factor(MUT_COUNT))) +
+      geom_bar(width=0.9) +
+      facet_grid(POSITION ~ .) +
+      xlab("Mutation Count (Sequence)") + ylab("Sequence Count") +
+      theme_bw() +
+      theme(legend.position=c(1,1), legend.justification=c(1,1),
+            legend.background=element_rect(fill = "transparent"))
+  }
   # MAKE THE THIRD PLOT
   p3 = ggplot(db_subset, aes_(~JUNCTION_LENGTH, fill=~factor(J_GENE))) +
     geom_bar(width=0.9) +
@@ -548,7 +617,10 @@ plotNovel <- function(clip_db, novel_df_row, ncol = 1){
     theme(legend.position=c(1,1), legend.justification=c(1,1),
           legend.background=element_rect(fill = "transparent"))
   
-  multiplot(p1,p2,p3, cols = ncol)
+  p2_height = length(unique(p2_data$POSITION))
+  if (p2_height>1) { p2_height = 0.5 * p2_height}
+  heights = c(1, p2_height, 1)
+  multiplot(p1, p2, p3, cols = ncol, heights=heights)
 }
 
 #' Infer a subject-specific genotype
@@ -561,10 +633,11 @@ plotNovel <- function(clip_db, novel_df_row, ncol = 1){
 #' by chance have been mutated to look like another allele) can be removed.
 #' 
 #' @param    clip_db              a \code{data.frame} containing V allele
-#'                                calls from a single subject under
-#'                                \code{"V_CALL"}. If
+#'                                calls from a single subject. If
 #'                                \code{find_unmutated} is \code{TRUE}, then
 #'                                the sample IMGT-gapped V(D)J sequence should 
+#' @param    v_call               column in \code{clip_db} with V allele calls.
+#'                                Default is \code{"V_CALL"}                               
 #'                                be provided in a column \code{"SEQUENCE_IMGT"}
 #' @param    fraction_to_explain  the portion of each gene that must be
 #'                                explained by the alleles that will be included
@@ -616,12 +689,12 @@ plotNovel <- function(clip_db, novel_df_row, ncol = 1){
 #'          \link{genotypeFasta} to convert the genotype to nucleotide sequences.
 #' 
 #' @export
-inferGenotype <- function(clip_db, fraction_to_explain = 0.875,
+inferGenotype <- function(clip_db, v_call="V_CALL", fraction_to_explain = 0.875,
                           gene_cutoff = 1e-4, find_unmutated = TRUE,
                           germline_db = NA, novel_df = NA){
   
   . = NULL
-  allele_calls = getAllele(clip_db$V_CALL, first=FALSE, strip_d=FALSE)
+  allele_calls = getAllele(clip_db[[v_call]], first=FALSE, strip_d=FALSE)
   # Find the unmutated subset, if requested
   if(find_unmutated){
     if(is.na(germline_db[1])){
@@ -887,12 +960,14 @@ genotypeFasta <- function(genotype, germline_db, novel_df=NA){
 #' based on a simple alignment to the sample sequence.
 #' 
 #' @param    clip_db       a \code{data.frame} containing V allele calls from a
-#'                         single subject under \code{"V_CALL"} and the sample
+#'                         single subject and the sample
 #'                         IMGT-gapped V(D)J sequences under
 #'                         \code{"SEQUENCE_IMGT"}
 #' @param    genotype_db   a vector of named nucleotide germline sequences
 #'                         matching the calls detailed in \code{allele_calls}
 #'                         and personalized to the subject
+#' @param    v_call        name of the column in \code{clip_db} with V allele
+#'                         calls. Default is \code{"V_CALL"}                         
 #' @param    method        the method to be used when realigning sequences to
 #'                         the genotype_db sequences. Currently only "hammming"
 #'                         (for Hamming distance) is implemented.
@@ -923,12 +998,13 @@ genotypeFasta <- function(genotype, germline_db, novel_df=NA){
 #' sample_db = cbind(sample_db, V_CALL_GENOTYPED)
 #' 
 #' @export
-reassignAlleles <- function(clip_db, genotype_db, method="hamming", path=NA,
+reassignAlleles <- function(clip_db, genotype_db, v_call="V_CALL",
+                            method="hamming", path=NA,
                             keep_gene=TRUE){
   
   # Extract data subset and prepare output vector
   v_sequences = as.character(clip_db$SEQUENCE_IMGT)
-  v_calls = getAllele(clip_db$V_CALL, first=FALSE, strip_d=FALSE)
+  v_calls = getAllele(clip_db[[v_call]], first=FALSE, strip_d=FALSE)
   v_genes = getGene(v_calls, first = TRUE, strip_d=FALSE)
   V_CALL_GENOTYPED = rep("", length(v_calls))
   
@@ -1450,13 +1526,16 @@ sortAlleles <- function(allele_calls, method=c("name", "position")) {
     mutate_(FAMILY = ~getFamily(SUBMITTED_CALLS)) %>%
     # Determine the gene (exclude family); convert letters to numbers for sort
     mutate_(GENE = ~getGene(SUBMITTED_CALLS)) %>%
-    mutate_(GENE1 = ~gsub("[^-]+-([^-\\*D]+).*","\\1",SUBMITTED_CALLS)) %>%
+    mutate_(GENE1 = ~gsub("[^-]+[-S]([^-\\*D]+).*","\\1",SUBMITTED_CALLS)) %>%
     mutate_(GENE1 = ~as.numeric(gsub("[^0-9]+", "99", GENE1))) %>%
     # If there is a second gene number, determine that, too
-    mutate_(GENE2 = ~gsub("[^-]+-[^-]+-?","",GENE)) %>%
+    mutate_(GENE2 = ~gsub("[^-]+[-S][^-]+-?","",GENE)) %>%
     mutate_(GENE2 = ~as.numeric(gsub("[^0-9]+", "99", GENE2))) %>%
-    mutate_(ALLELE = ~as.numeric(sub("[^\\*]+\\*|[^\\*]+$","",
-                                   getAllele(SUBMITTED_CALLS))))
+    mutate_(ALLELE = ~getAllele(SUBMITTED_CALLS)) %>%      
+    mutate_(ALLELE = ~(sub("[^\\*]+\\*|[^\\*]+$","",
+                                   ALLELE))) %>%
+    mutate_(ALLELE = ~as.numeric(sub("_.+$","",
+                             ALLELE)))
   # Convert missing values to 0, sort data frame
   allele_df[is.na(allele_df)] = 0
   if (method == "name") {  
@@ -1619,12 +1698,17 @@ superSubstring = function(string, positions){
 # @param    cols      Number of columns in layout
 # @param    layout    A matrix specifying the layout. If present, 'cols' is
 #                     ignored.
-multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+# @param    heights   A numeric vector A numeric vector or unit object 
+#                     describing the heights of the rows in the layout. Will
+#                     be passed to grid.layout. Default is all plots have 
+#                     the same height.
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL, heights=NULL) {
   
   # Make a list from the ... arguments and plotlist
   plots <- c(list(...), plotlist)
   
   numPlots = length(plots)
+  if (is.null(heights)) { heights = rep(1,numPlots) }
   
   # If layout is NULL, then use 'cols' to determine layout
   if (is.null(layout)) {
@@ -1641,7 +1725,8 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
   } else {
     # Set up the page
     grid.newpage()
-    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout),
+                                                 heights=heights)))
     
     # Make each plot, in the correct location
     for (i in 1:numPlots) {

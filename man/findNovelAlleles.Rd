@@ -4,16 +4,19 @@
 \alias{findNovelAlleles}
 \title{Find novel alleles from repertoire sequencing data}
 \usage{
-findNovelAlleles(clip_db, germline_db, germline_min = 200, min_seqs = 50,
-  auto_mutrange = TRUE, mut_range = 1:10, pos_range = 1:312,
-  y_intercept = 0.125, alpha = 0.05, j_max = 0.15, min_frac = 0.75,
-  nproc = 1)
+findNovelAlleles(clip_db, germline_db, v_call = "V_CALL",
+  germline_min = 200, min_seqs = 50, auto_mutrange = TRUE,
+  mut_range = 1:10, pos_range = 1:312, y_intercept = 0.125,
+  alpha = 0.05, j_max = 0.15, min_frac = 0.75, nproc = 1)
 }
 \arguments{
 \item{clip_db}{a \code{data.frame} in Change-O format. See details.}
 
 \item{germline_db}{a vector of named nucleotide germline sequences
 matching the V calls in \code{clip_db}}
+
+\item{v_call}{name of the column in clip_db with V allele calls. 
+Default is V_CALL.}
 
 \item{germline_min}{the minimum number of sequences that must have a
 particular germline allele call for the allele to

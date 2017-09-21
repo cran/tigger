@@ -4,15 +4,18 @@
 \alias{inferGenotype}
 \title{Infer a subject-specific genotype}
 \usage{
-inferGenotype(clip_db, fraction_to_explain = 0.875, gene_cutoff = 1e-04,
-  find_unmutated = TRUE, germline_db = NA, novel_df = NA)
+inferGenotype(clip_db, v_call = "V_CALL", fraction_to_explain = 0.875,
+  gene_cutoff = 1e-04, find_unmutated = TRUE, germline_db = NA,
+  novel_df = NA)
 }
 \arguments{
 \item{clip_db}{a \code{data.frame} containing V allele
-calls from a single subject under
-\code{"V_CALL"}. If
+calls from a single subject. If
 \code{find_unmutated} is \code{TRUE}, then
-the sample IMGT-gapped V(D)J sequence should 
+the sample IMGT-gapped V(D)J sequence should}
+
+\item{v_call}{column in \code{clip_db} with V allele calls.
+Default is \code{"V_CALL"}                               
 be provided in a column \code{"SEQUENCE_IMGT"}}
 
 \item{fraction_to_explain}{the portion of each gene that must be

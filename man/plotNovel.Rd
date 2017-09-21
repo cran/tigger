@@ -4,7 +4,7 @@
 \alias{plotNovel}
 \title{Visualize evidence of novel V alleles}
 \usage{
-plotNovel(clip_db, novel_df_row, ncol = 1)
+plotNovel(clip_db, novel_df_row, ncol = 1, v_call = "V_CALL")
 }
 \arguments{
 \item{clip_db}{a \code{data.frame} in Change-O format. See
@@ -15,6 +15,9 @@ plotNovel(clip_db, novel_df_row, ncol = 1)
 polymorphism-containing germline allele}
 
 \item{ncol}{number of columns to use when laying out the plots}
+
+\item{v_call}{name of the column in \code{clip_db} with V allele
+calls. Default is "V_CALL"}
 }
 \description{
 \code{plotNovel} is be used to visualize the evidence of any novel V
