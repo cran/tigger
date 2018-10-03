@@ -9,16 +9,16 @@ writeFasta(named_sequences, file, width = 60, append = FALSE)
 \arguments{
 \item{named_sequences}{a vector of named string representing sequences}
 
-\item{file}{the name of the output file}
+\item{file}{the name of the output file.}
 
 \item{width}{the number of characters to be printed per line.
-If not between 1 and 255, width with be infinite.}
+if not between 1 and 255, width with be infinite.}
 
 \item{append}{\code{logical} indicating if the output should be
 appended to \code{file} instead of overwriting it}
 }
 \value{
-a named vector of strings respresenting Ig alleles
+A named vector of strings respresenting Ig alleles.
 }
 \description{
 \code{writeFasta} writes a named vector of sequences to a file in fasta

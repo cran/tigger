@@ -2,86 +2,95 @@
 % Please edit documentation in R/functions.R
 \name{inferGenotype}
 \alias{inferGenotype}
-\title{Infer a subject-specific genotype}
+\title{Infer a subject-specific genotype using a frequency method}
 \usage{
-inferGenotype(clip_db, v_call = "V_CALL", fraction_to_explain = 0.875,
-  gene_cutoff = 1e-04, find_unmutated = TRUE, germline_db = NA,
-  novel_df = NA)
+inferGenotype(data, germline_db = NA, novel = NA, v_call = "V_CALL",
+  fraction_to_explain = 0.875, gene_cutoff = 1e-04,
+  find_unmutated = TRUE)
 }
 \arguments{
-\item{clip_db}{a \code{data.frame} containing V allele
+\item{data}{a \code{data.frame} containing V allele
 calls from a single subject. If
 \code{find_unmutated} is \code{TRUE}, then
 the sample IMGT-gapped V(D)J sequence should}
-
-\item{v_call}{column in \code{clip_db} with V allele calls.
-Default is \code{"V_CALL"}                               
-be provided in a column \code{"SEQUENCE_IMGT"}}
-
-\item{fraction_to_explain}{the portion of each gene that must be
-explained by the alleles that will be included
-in the genotype}
-
-\item{gene_cutoff}{either a number of sequences or a fraction of
-the length of \code{allele_calls} denoting the
-minimum number of times a gene must be
-observed in \code{allele_calls} to be included
-in the genotype}
-
-\item{find_unmutated}{if \code{TRUE}, use \code{germline_db} to
-find which samples are unmutated. Not needed
-if \code{allele_calls} only represent
-unmutated samples.}
 
 \item{germline_db}{named vector of sequences containing the
 germline sequences named in
 \code{allele_calls}. Only required if
 \code{find_unmutated} is \code{TRUE}.}
 
-\item{novel_df}{an optional \code{data.frame} of the type
+\item{novel}{an optional \code{data.frame} of the type
 novel returned by
 \link{findNovelAlleles} containing
 germline sequences that will be utilized if
 \code{find_unmutated} is \code{TRUE}. See
-details.}
+Details.}
+
+\item{v_call}{column in \code{data} with V allele calls.
+Default is \code{"V_CALL"}.                            
+be provided in a column \code{"SEQUENCE_IMGT"}}
+
+\item{fraction_to_explain}{the portion of each gene that must be
+explained by the alleles that will be included
+in the genotype.}
+
+\item{gene_cutoff}{either a number of sequences or a fraction of
+the length of \code{allele_calls} denoting the
+minimum number of times a gene must be
+observed in \code{allele_calls} to be included
+in the genotype.}
+
+\item{find_unmutated}{if \code{TRUE}, use \code{germline_db} to
+find which samples are unmutated. Not needed
+if \code{allele_calls} only represent
+unmutated samples.}
 }
 \value{
-A table of alleles denoting the genotype of the subject
+A \code{data.frame} of alleles denoting the genotype of the subject containing 
+the following columns:
+          
+\itemize{
+  \item \code{GENE}: The gene name without allele.
+  \item \code{ALLELES}: Comma separated list of alleles for the given \code{GENE}.
+  \item \code{COUNTS}: Comma separated list of observed sequences for each 
+        corresponding allele in the \code{ALLELES} list.
+  \item \code{TOTAL}: The total count of observed sequences for the given \code{GENE}.
+  \item \code{NOTE}: Any comments on the inferrence.
+}
 }
 \description{
-\code{inferGenotype} infers an subject's genotype by finding the minimum
-number set of alleles that can explain the majority of each gene's calls. The
-most common allele of each gene is included in the genotype first, and the
-next most common allele is added until the desired fraction of alleles can be
-explained. In this way, mistaken allele calls (resulting from sequences which
+\code{inferGenotype} infers an subject's genotype using a frequency method.
+The genotype is inferred by finding the minimum number set of alleles that 
+can explain the majority of each gene's calls. The most common allele of 
+each gene is included in the genotype first, and the next most common allele 
+is added until the desired fraction of alleles can be explained. In this 
+way, mistaken allele calls (resulting from sequences which
 by chance have been mutated to look like another allele) can be removed.
 }
 \details{
 Allele calls representing cases where multiple alleles have been
-          assigned to a single sample sequence are rare among unmutated
-          sequences but may result if nucleotides for certain positions are
-          not available. Calls containing multiple alleles are treated as
-          belonging to all groups. If \code{novel_df} is provided, all
-          sequences that are assigned to the same starting allele as any
-          novel germline allele will have the novel germline allele appended
-          to their assignent prior to searching for unmutated sequences.
+assigned to a single sample sequence are rare among unmutated
+sequences but may result if nucleotides for certain positions are
+not available. Calls containing multiple alleles are treated as
+belonging to all groups. If \code{novel} is provided, all
+sequences that are assigned to the same starting allele as any
+novel germline allele will have the novel germline allele appended
+to their assignent prior to searching for unmutated sequences.
 }
 \note{
 This method works best with data derived from blood, where a large
-          portion of sequences are expected to be unmutated. Ideally, there
-          should be hundreds of allele calls per gene in the input.
+portion of sequences are expected to be unmutated. Ideally, there
+should be hundreds of allele calls per gene in the input.
 }
 \examples{
-# Infer the IGHV genotype, using only unmutated sequences, including any 
-# novel alleles
-data(sample_db)
-data(germline_ighv)
-data(novel_df)
-inferGenotype(sample_db, find_unmutated = TRUE, germline_db = germline_ighv,
-              novel_df = novel_df)
+# Infer IGHV genotype, using only unmutated sequences, including novel alleles
+inferGenotype(SampleDb, germline_db=GermlineIGHV, novel=SampleNovel,
+              find_unmutated=TRUE)
 
 }
 \seealso{
 \link{plotGenotype} for a colorful visualization and
          \link{genotypeFasta} to convert the genotype to nucleotide sequences.
+         See \link{inferGenotypeBayesian} to infer a subject-specific genotype 
+         using a Bayesian approach.
 }

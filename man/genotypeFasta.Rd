@@ -4,36 +4,30 @@
 \alias{genotypeFasta}
 \title{Return the nucleotide sequences of a genotype}
 \usage{
-genotypeFasta(genotype, germline_db, novel_df = NA)
+genotypeFasta(genotype, germline_db, novel = NA)
 }
 \arguments{
-\item{genotype}{a table of alleles denoting a genotype, as returned by
-\link{inferGenotype}}
+\item{genotype}{a \code{data.frame} of alleles denoting a genotype, 
+as returned by \link{inferGenotype}.}
 
 \item{germline_db}{a vector of named nucleotide germline sequences
-matching the alleles detailed in \code{genotype}}
+matching the alleles detailed in \code{genotype}.}
 
-\item{novel_df}{an optional \code{data.frame} containing putative
+\item{novel}{an optional \code{data.frame} containing putative
 novel alleeles of the type returned by
-\link{findNovelAlleles}}
+\link{findNovelAlleles}.}
 }
 \value{
 A named vector of strings containing the germline nucleotide
-          sequences of the alleles in the provided genotype
+          sequences of the alleles in the provided genotype.
 }
 \description{
 \code{genotypeFasta} converts a genotype table into a vector of nucleotide
 sequences.
 }
 \examples{
-# Load example data
-data(germline_ighv)
-data(novel_df)
-data(genotype)
-                     
 # Find the sequences that correspond to the genotype
-genotype_seqs = genotypeFasta(genotype, germline_ighv, novel_df)
-
+genotype_db <- genotypeFasta(SampleGenotype, GermlineIGHV, SampleNovel)
 
 }
 \seealso{

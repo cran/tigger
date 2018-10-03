@@ -4,15 +4,15 @@
 \alias{selectNovel}
 \title{Select rows containing novel alleles}
 \usage{
-selectNovel(novel_df, keep_alleles = FALSE)
+selectNovel(novel, keep_alleles = FALSE)
 }
 \arguments{
-\item{novel_df}{A \code{data.frame} of the type returned by
-\link{findNovelAlleles}}
+\item{novel}{a \code{data.frame} of the type returned by
+\link{findNovelAlleles}.}
 
-\item{keep_alleles}{A \code{logical} indicating if different alleles
+\item{keep_alleles}{a \code{logical} indicating if different alleles
 leading to the same novel sequence should be kept.
-See details.}
+See Details.}
 }
 \value{
 A \code{data.frame} containing only unique, novel alleles (if any)
@@ -23,15 +23,14 @@ that were in the input.
 selects only the rows containing unique, novel alleles.
 }
 \details{
-If, for instance, subject has in his genome IGHV1-2*02 and a novel 
-allele equally close to IGHV1-2*02 and IGHV1-2*05, the novel allele may be
+If, for instance, subject has in his genome \code{IGHV1-2*02} and a novel 
+allele equally close to \code{IGHV1-2*02} and \code{IGHV1-2*05}, the novel allele may be
 detected by analyzing sequences that best align to either of these alleles.
 If \code{keep_alleles} is \code{TRUE}, both polymorphic allele calls will
 be retained. In the case that multiple mutation ranges are checked for the
 same allele, only one mutation range will be kept in the output.
 }
 \examples{
-data(novel_df)
-novel = selectNovel(novel_df)
+novel <- selectNovel(SampleNovel)
 
 }

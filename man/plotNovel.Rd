@@ -4,35 +4,41 @@
 \alias{plotNovel}
 \title{Visualize evidence of novel V alleles}
 \usage{
-plotNovel(clip_db, novel_df_row, ncol = 1, v_call = "V_CALL")
+plotNovel(data, novel_row, v_call = "V_CALL", ncol = 1)
 }
 \arguments{
-\item{clip_db}{a \code{data.frame} in Change-O format. See
+\item{data}{a \code{data.frame} in Change-O format. See
 \link{findNovelAlleles} for details.}
 
-\item{novel_df_row}{a single row from a data frame as output by
+\item{novel_row}{a single row from a data frame as output by
 \link{findNovelAlleles} that contains a
 polymorphism-containing germline allele}
 
-\item{ncol}{number of columns to use when laying out the plots}
+\item{v_call}{name of the column in \code{data} with V allele
+calls. Default is "V_CALL".}
 
-\item{v_call}{name of the column in \code{clip_db} with V allele
-calls. Default is "V_CALL"}
+\item{ncol}{number of columns to use when laying out the plots}
 }
 \description{
 \code{plotNovel} is be used to visualize the evidence of any novel V
-alleles found using \link{findNovelAlleles}.
+alleles found using \link{findNovelAlleles}. It can also be used to
+visualize the results for alleles that did
+}
+\details{
+The first panel in the plot shows, for all sequences which align to a particular 
+germline allele, the mutation frequency at each postion along the aligned 
+sequece as a function of the sequence-wide mutation. Sequences that pass 
+the novel allele test are colored red, while sequences that don't pass
+the test are colored yellow. The second panel shows the nucleotide usage at the 
+positions as a function of sequence-wide mutation count.
+
+To avoid cases where a clonal expansion might lead to a false positive, tigger examines
+the combinations of J gene and junction length among sequences which perfectly 
+match the proposed germline allele.
 }
 \examples{
-# Load example data and germlines
-data(sample_db)
-data(germline_ighv)
-
-# Find novel alleles and return relevant data
-\dontrun{novel_df = findNovelAlleles(sample_db, germline_ighv)}
-data(novel_df)
 # Plot the evidence for the first (and only) novel allele in the example data
-novel = selectNovel(novel_df)
-plotNovel(sample_db, novel[1,])
+novel <- selectNovel(SampleNovel)
+plotNovel(SampleDb, novel[1, ])
 
 }

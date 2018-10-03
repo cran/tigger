@@ -4,39 +4,40 @@
 \alias{reassignAlleles}
 \title{Correct allele calls based on a personalized genotype}
 \usage{
-reassignAlleles(clip_db, genotype_db, v_call = "V_CALL", method = "hamming",
-  path = NA, keep_gene = TRUE)
+reassignAlleles(data, genotype_db, v_call = "V_CALL",
+  method = "hamming", path = NA, keep_gene = c("gene", "family",
+  "repertoire"))
 }
 \arguments{
-\item{clip_db}{a \code{data.frame} containing V allele calls from a
-single subject and the sample
-IMGT-gapped V(D)J sequences under
-\code{"SEQUENCE_IMGT"}}
+\item{data}{a \code{data.frame} containing V allele calls from a
+single subject and the sample IMGT-gapped V(D)J sequences under
+\code{"SEQUENCE_IMGT"}.}
 
 \item{genotype_db}{a vector of named nucleotide germline sequences
 matching the calls detailed in \code{allele_calls}
 and personalized to the subject}
 
-\item{v_call}{name of the column in \code{clip_db} with V allele
-calls. Default is \code{"V_CALL"}}
+\item{v_call}{name of the column in \code{data} with V allele
+calls. Default is \code{"V_CALL"}.}
 
 \item{method}{the method to be used when realigning sequences to
-the genotype_db sequences. Currently only "hammming"
+the genotype_db sequences. Currently, only \code{"hammming"}
 (for Hamming distance) is implemented.}
 
 \item{path}{directory containing the tool used in the
 realignment method, if needed. Hamming distance does
 not require a path to a tool.}
 
-\item{keep_gene}{logical indicating if gene assignments should be
-maintained when possible. Increases speed by
-minimizing required number of alignments. Currently
-only "TRUE" is implemented.}
+\item{keep_gene}{a string indicating if the gene (\code{"gene"}), 
+family (\code{"family"}) or complete repertoire
+(\code{"repertoire"}) assignments should be performed. 
+Use of \code{"gene"} increases speed by minimizing required number of 
+alignments, as gene level assignments will be maintained when possible.}
 }
 \value{
-a single-column \code{data.frame} corresponding to \code{clip.db}
-          and containing the best allele call from among the sequences
-          listed in \code{genotype_db}
+A modifed input \code{data.frame} containing the best allele call from 
+          among the sequences listed in \code{genotype_db} in the 
+          \code{V_CALL_GENOTYPED} column.
 }
 \description{
 \code{reassignAlleles} uses a subject-specific genotype to correct
@@ -49,17 +50,10 @@ the allele calls are chosen from among those provided in \code{genotype_db},
 based on a simple alignment to the sample sequence.
 }
 \examples{
-# Load example data
-data(germline_ighv)
-data(sample_db)
-data(genotype)
-data(novel_df)
-                     
 # Extract the database sequences that correspond to the genotype
-genotype_seqs = genotypeFasta(genotype, germline_ighv, novel_df)
+genotype_db <- genotypeFasta(SampleGenotype, GermlineIGHV, novel=SampleNovel)
 
 # Use the personlized genotype to determine corrected allele assignments
-V_CALL_GENOTYPED = reassignAlleles(sample_db, genotype_seqs)
-sample_db = cbind(sample_db, V_CALL_GENOTYPED)
+output_db <- reassignAlleles(SampleDb, genotype_db)
 
 }

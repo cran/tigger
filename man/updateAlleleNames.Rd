@@ -7,34 +7,34 @@
 updateAlleleNames(allele_calls)
 }
 \arguments{
-\item{allele_calls}{a vector of strings respresenting IGHV allele names}
+\item{allele_calls}{a vector of strings respresenting IGHV allele names.}
 }
 \value{
-vector of strings respresenting updated IGHV allele names
+Vector of strings respresenting updated IGHV allele names.
 }
 \description{
 \code{updateAlleleNames} takes a set of IGHV allele calls and replaces any
 outdated names (e.g. IGHV1-f) with the new IMGT names.
 }
-\details{
-The updated allele names are based on IMGT release 201408-4.
-}
 \note{
-IGMT has removed IGHV2-5*10 and IGHV2-5*07 as it has determined they
-         are actually alleles *02 and *04, respectively.
+IGMT has removed \code{IGHV2-5*10} and \code{IGHV2-5*07} as it has determined they
+are actually alleles \code{02} and \code{04}, respectively. The updated allele 
+names are based on IMGT release 201408-4.
 }
 \examples{
 # Create a vector that uses old gene/allele names.
-alleles = c("IGHV1-c*01", "IGHV1-f*02", "IGHV2-5*07")
+alleles <- c("IGHV1-c*01", "IGHV1-f*02", "IGHV2-5*07")
 
 # Update the alleles to the new names
 updateAlleleNames(alleles)
 
 }
 \references{
-Xochelli et al. (2014) Immunoglobulin heavy variable (IGHV) genes
-and alleles: new entities, new names and implications for research and
-prognostication in chronic lymphocytic leukaemia. Immunogenetics. 67(1):61-6
+\enumerate{
+  \item Xochelli et al. (2014) Immunoglobulin heavy variable (IGHV) genes
+        and alleles: new entities, new names and implications for research and
+        prognostication in chronic lymphocytic leukaemia. Immunogenetics. 67(1):61-6
+}
 }
 \seealso{
 Like \code{updateAlleleNames}, \link{sortAlleles} can help

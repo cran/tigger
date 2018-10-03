@@ -4,12 +4,12 @@
 \alias{plotGenotype}
 \title{Show a colorful representation of a genotype}
 \usage{
-plotGenotype(genotype, facet_by = NULL, gene_sort = c("name", "position"),
-  text_size = 12, silent = FALSE, ...)
+plotGenotype(genotype, facet_by = NULL, gene_sort = c("name",
+  "position"), text_size = 12, silent = FALSE, ...)
 }
 \arguments{
-\item{genotype}{a table of alleles denoting a genotype, as returned by
-\link{inferGenotype}}
+\item{genotype}{a \code{data.frame} of alleles denoting a genotype, 
+as returned by \link{inferGenotype}.}
 
 \item{facet_by}{a column name in \code{genotype} to facet the plot by. 
 If \code{NULL}, then do not facet the plot.}
@@ -19,7 +19,7 @@ If \code{"name"} then sort in lexicographic order. If
 \code{"position"} then sort by position in the locus, as
 determined by the final two numbers in the gene name.}
 
-\item{text_size}{the point size of the plotted text}
+\item{text_size}{the point size of the plotted text.}
 
 \item{silent}{if \code{TRUE} do not draw the plot and just return the ggplot
 object; if \code{FALSE} draw the plot.}
@@ -33,18 +33,14 @@ A ggplot object defining the plot.
 \code{plotGenotype} plots a genotype table.
 }
 \examples{
-# Load example data
-data(novel_df)
-data(genotype)
-
 # Plot genotype
-plotGenotype(genotype)
+plotGenotype(SampleGenotype)
 
 # Facet by subject
-genotypea = genotypeb = genotype
-genotypea$SUBJECT = "A"
-genotypeb$SUBJECT = "B"
-geno_sub = rbind(genotypea, genotypeb)
+genotype_a <- genotype_b <- SampleGenotype
+genotype_a$SUBJECT <- "A"
+genotype_b$SUBJECT <- "B"
+geno_sub <- rbind(genotype_a, genotype_b)
 plotGenotype(geno_sub, facet_by="SUBJECT", gene_sort="pos")
 
 }

@@ -2,13 +2,13 @@
 % Please edit documentation in R/functions.R
 \name{getPopularMutationCount}
 \alias{getPopularMutationCount}
-\title{Find Frequent Sequences' Mutation Counts}
+\title{Find mutation counts for frequency sequences}
 \usage{
-getPopularMutationCount(sample_db, germline_db, gene_min = 0.001,
+getPopularMutationCount(data, germline_db, gene_min = 0.001,
   seq_min = 50, seq_p_of_max = 1/8, full_return = FALSE)
 }
 \arguments{
-\item{sample_db}{A Change-O db data frame. See
+\item{data}{a \code{data.frame} in the Change-O format. See
 \link{findNovelAlleles} for a list of required
 columns.}
 
@@ -23,7 +23,7 @@ to avoid exclusion.}
 \item{seq_p_of_max}{For each gene, fraction of the most common V sequence's
 count that a sequence must meet to avoid exclusion.}
 
-\item{full_return}{If true, will return all \code{sample_db} columns and
+\item{full_return}{If \code{TRUE}, will return all \code{data} columns and
 will include sequences with mutation count < 1.}
 }
 \value{
@@ -35,8 +35,7 @@ A data frame of genes that have a frequent sequence mutation count
 for each V gene and returns the mutation count of those sequences.
 }
 \examples{
-data(sample_db, germline_ighv)
-getPopularMutationCount(sample_db, germline_ighv)
+getPopularMutationCount(SampleDb, GermlineIGHV)
 
 }
 \seealso{

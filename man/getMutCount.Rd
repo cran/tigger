@@ -27,20 +27,19 @@ and determines the distance between that seqeunce and any germline alleles
 contained within the call
 }
 \examples{
-# Load germline database
-data(germline_ighv)
-
+\donttest{
 # Use createGermlines to insert a mutation into a germline sequence
-#sample_seqs = c(germline_ighv[2],
-#                createGermlines(germline_ighv[1], 103, "G"),
-#                createGermlines(germline_ighv[1], 107, "C"))
+sample_seqs <- c(GermlineIGHV[2],
+                 createGermlines(GermlineIGHV[1], 103, "G"),
+                 createGermlines(GermlineIGHV[1], 107, "C"))
 
 # Pretend that one sample sequence has received an ambiguous allele call
-#sample_alleles = c(paste(names(germline_ighv[1:2]), collapse=","),
-#                  names(germline_ighv[2]),
-#                  names(germline_ighv[1]))
+sample_alleles <- c(paste(names(GermlineIGHV[1:2]), collapse=","),
+                    names(GermlineIGHV[2]),
+                    names(GermlineIGHV[1]))
 
 # Compare each sequence to its assigned germline(s) to determine the distance
-#getMutCount(sample_seqs, sample_alleles, germline_ighv)
+getMutCount(sample_seqs, sample_alleles, GermlineIGHV)
+}
 
 }

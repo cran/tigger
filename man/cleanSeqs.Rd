@@ -7,20 +7,18 @@
 cleanSeqs(seqs)
 }
 \arguments{
-\item{seqs}{a vector of nucleotide sequences}
+\item{seqs}{a vector of nucleotide sequences.}
 }
 \value{
-A vector of nucleotide sequences
+A modified vector of nucleotide sequences.
 }
 \description{
-\code{cleanSeqs} capitalizes nucleotides, replaces "." with "-", and then
-replaces all characters besides ACGT- with "N".
+\code{cleanSeqs} capitalizes nucleotides and replaces all characters 
+besides \code{c("A", "C", "G", "T", "-", ".")} with \code{"N"}.
 }
 \examples{
-# Create messy nucleotide sequences
-seqs = c("AGAT.taa-GAG...ATA",
-         "GATACAGTXXXXXAGNNNPPPACA")
-# Clean them up
+# Clean messy nucleotide sequences
+seqs <- c("AGAT.taa-GAG...ATA", "GATACAGTXXZZAGNNPPACA")
 cleanSeqs(seqs)
 
 }

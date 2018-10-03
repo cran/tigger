@@ -7,7 +7,7 @@
 sortAlleles(allele_calls, method = c("name", "position"))
 }
 \arguments{
-\item{allele_calls}{a vector of strings respresenting Ig allele names}
+\item{allele_calls}{a vector of strings respresenting Ig allele names.}
 
 \item{method}{a string defining the method to use when sorting alleles.
 If \code{"name"} then sort in lexicographic order. If
@@ -15,21 +15,21 @@ If \code{"name"} then sort in lexicographic order. If
 determined by the final two numbers in the gene name.}
 }
 \value{
-A sorted vector of strings respresenting Ig allele names
+A sorted vector of strings respresenting Ig allele names.
 }
 \description{
 \code{sortAlleles} returns a sorted vector of strings respresenting Ig allele
 names. Names are first sorted by gene family, then by gene, then by allele.
 Duplicated genes have their alleles are sorted as if they were part of their
-non-duplicated counterparts (e.g. IGHV1-69D*01 comes after IGHV1-69*01 but
-before IGHV1-69*02), and non-localized genes (e.g. IGHV1-NL1*01) come last
-within their gene family.
+non-duplicated counterparts (e.g. \code{IGHV1-69D*01} comes after \code{IGHV1-69*01} 
+but before \code{IGHV1-69*02}), and non-localized genes (e.g. \code{IGHV1-NL1*01}) 
+come last within their gene family.
 }
 \examples{
 # Create a list of allele names
-alleles = c("IGHV1-69D*01","IGHV1-69*01","IGHV1-2*01","IGHV1-69-2*01",
-            "IGHV2-5*01","IGHV1-NL1*01", "IGHV1-2*01,IGHV1-2*05", 
-            "IGHV1-2", "IGHV1-2*02", "IGHV1-69*02")
+alleles <- c("IGHV1-69D*01","IGHV1-69*01","IGHV1-2*01","IGHV1-69-2*01",
+             "IGHV2-5*01","IGHV1-NL1*01", "IGHV1-2*01,IGHV1-2*05", 
+             "IGHV1-2", "IGHV1-2*02", "IGHV1-69*02")
 
 # Sort the alleles by name
 sortAlleles(alleles)
