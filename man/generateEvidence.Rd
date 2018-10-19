@@ -60,6 +60,8 @@ providing supporting evidence for each inferred allele:
         novel allele. The sequences are those who have been unambiguously assigned 
         to the novel allelle (\code{POLYMORPHISM_CALL}).
   \item \code{UNIQUE_CDR3S}: Number of unique CDR3s associated with the inferred allele.
+        The sequences are those who have been unambiguously assigned to the 
+        novel allelle (POLYMORPHISM_CALL).
   \item \code{MUT_MIN}: Minimum mutation considered by the algorithm.
   \item \code{MUT_MAX}: Maximum mutation considered by the algorithm.
   \item \code{POS_MIN}: First position of the sequence considered by the algorithm (IMGT numbering).
