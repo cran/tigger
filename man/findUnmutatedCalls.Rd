@@ -28,6 +28,6 @@ sequence, only the subset that would represent a perfect match is returned.
 \examples{
 # Find which of the sample alleles are unmutated
 calls <- findUnmutatedCalls(SampleDb$V_CALL, SampleDb$SEQUENCE_IMGT, 
-         germline_db=GermlineIGHV)
+         germline_db=SampleGermlineIGHV)
 
 }

@@ -5,7 +5,7 @@
 \title{Generate evidence}
 \usage{
 generateEvidence(data, novel, genotype, genotype_db, germline_db,
-  fields = NULL)
+  j_call = "J_CALL", junction = "JUNCTION", fields = NULL)
 }
 \arguments{
 \item{data}{a \code{data.frame} containing sequence data that has been
@@ -22,6 +22,13 @@ Returned by \link{genotypeFasta}.}
 
 \item{germline_db}{the original uncorrected germline database used to by
 \link{findNovelAlleles} to identify novel alleles.}
+
+\item{j_call}{name of the column in \code{data} with J allele calls. 
+Default is J_CALL.}
+
+\item{junction}{Junction region nucleotide sequence, which includes
+the CDR3 and the two flanking conserved codons. Default
+is JUNCTION}
 
 \item{fields}{character vector of column names used to split the data to 
 identify novel alleles, if any. If \code{NULL} then the data is 
@@ -88,14 +95,16 @@ allele detection and genotyping inferrences.
 \examples{
 \donttest{
 # Generate input data
-novel <- findNovelAlleles(SampleDb, GermlineIGHV)
-genotype <- inferGenotype(SampleDb, find_unmutated=TRUE, germline_db=GermlineIGHV,
+novel <- findNovelAlleles(SampleDb, SampleGermlineIGHV)
+genotype <- inferGenotype(SampleDb, find_unmutated=TRUE, 
+                          germline_db=SampleGermlineIGHV,
                           novel=novel)
-genotype_db <- genotypeFasta(genotype, GermlineIGHV, novel)
+genotype_db <- genotypeFasta(genotype, SampleGermlineIGHV, novel)
 data_db <- reassignAlleles(SampleDb, genotype_db)
 
 # Assemble evidence table
-evidence <- generateEvidence(data_db, novel, genotype, genotype_db, GermlineIGHV)
+evidence <- generateEvidence(data_db, novel, genotype, 
+                             genotype_db, SampleGermlineIGHV)
 }
 
 }

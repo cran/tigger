@@ -5,9 +5,11 @@
 \title{Find novel alleles from repertoire sequencing data}
 \usage{
 findNovelAlleles(data, germline_db, v_call = "V_CALL",
-  germline_min = 200, min_seqs = 50, auto_mutrange = TRUE,
-  mut_range = 1:10, pos_range = 1:312, y_intercept = 0.125,
-  alpha = 0.05, j_max = 0.15, min_frac = 0.75, nproc = 1)
+  j_call = "J_CALL", seq = "SEQUENCE_IMGT", junction = "JUNCTION",
+  junction_length = "JUNCTION_LENGTH", germline_min = 200,
+  min_seqs = 50, auto_mutrange = TRUE, mut_range = 1:10,
+  pos_range = 1:312, y_intercept = 0.125, alpha = 0.05,
+  j_max = 0.15, min_frac = 0.75, nproc = 1)
 }
 \arguments{
 \item{data}{a \code{data.frame} in Change-O format. See details.}
@@ -17,6 +19,20 @@ matching the V calls in \code{data}.}
 
 \item{v_call}{name of the column in \code{data} with V allele calls. 
 Default is V_CALL.}
+
+\item{j_call}{name of the column in \code{data} with J allele calls. 
+Default is J_CALL.}
+
+\item{seq}{name of the column in \code{data} with the 
+aligned, IMGT-numbered, V(D)J nucleotide sequence.
+Default is SEQUENCE_IMGT.}
+
+\item{junction}{Junction region nucleotide sequence, which includes
+the CDR3 and the two flanking conserved codons. Default
+is JUNCTION.}
+
+\item{junction_length}{Number of junction nucleotides in the junction sequence.
+Default is JUNCTION_LENGTH.}
 
 \item{germline_min}{the minimum number of sequences that must have a
 particular germline allele call for the allele to
@@ -87,7 +103,7 @@ The output contains the following columns:
   \item \code{GERMLINE_CALL_FREQ}: The fraction of sequences with the \code{GERMLINE_CALL} 
         in the input data initially considered for the analysis.              
   \item \code{GERMLINE_IMGT}: Germline sequence for \code{GERMLINE_CALL}.
-  \item \code{GERMLINE_IMGT_COUNT}:  The number of times the \code{GERMLINE_IMGT} 
+  \item \code{GERMLINE_IMGT_COUNT}: The number of times the \code{GERMLINE_IMGT} 
         sequence is found in the input data.
   \item \code{MUT_MIN}: Minimum mutation considered by the algorithm.
   \item \code{MUT_MAX}: Maximum mutation considered by the algorithm.
@@ -151,11 +167,17 @@ allele utilize a wide range of combinations of J gene and junction length.
 \examples{
 \donttest{
 # Find novel alleles and return relevant data
-novel <- findNovelAlleles(SampleDb, GermlineIGHV)
+novel <- findNovelAlleles(SampleDb, SampleGermlineIGHV)
+selectNovel(novel)
+# Note: In this example, with SampleGermlineIGHV,
+# which contains reference germlines retrieved on August 2018,
+# TIgGER finds the allele IGHV1-8*02_G234T. This allele
+# was added to IMGT as IGHV1-8*03 on March 28, 2018.
 }
 
 }
 \seealso{
+\link{selectNovel} to filter the results to show only novel alleles.
 \link{plotNovel} to visualize the data supporting any
 novel alleles hypothesized to be present in the data and
 \link{inferGenotype} to determine if the novel alleles are frequent

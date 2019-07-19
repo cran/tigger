@@ -60,3 +60,10 @@ data.frame(Ambiguous=c(mean(grepl(",", sample_db$V_CALL)),
            row.names=c("Before", "After")) %>% 
     t() %>% round(3)
 
+## ---- eval=TRUE, warning=FALSE-------------------------------------------
+evidence <- generateEvidence(sample_db, novel, geno, genotype_db, GermlineIGHV,
+  j_call = "J_CALL", junction = "JUNCTION", fields = NULL)
+
+evidence %>%
+  select(GENE, ALLELE, POLYMORPHISM_CALL, SEQUENCES, UNMUTATED_FREQUENCY)
+

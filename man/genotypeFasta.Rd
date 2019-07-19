@@ -27,7 +27,7 @@ sequences.
 }
 \examples{
 # Find the sequences that correspond to the genotype
-genotype_db <- genotypeFasta(SampleGenotype, GermlineIGHV, SampleNovel)
+genotype_db <- genotypeFasta(SampleGenotype, SampleGermlineIGHV, SampleNovel)
 
 }
 \seealso{

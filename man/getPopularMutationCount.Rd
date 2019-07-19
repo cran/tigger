@@ -4,8 +4,9 @@
 \alias{getPopularMutationCount}
 \title{Find mutation counts for frequency sequences}
 \usage{
-getPopularMutationCount(data, germline_db, gene_min = 0.001,
-  seq_min = 50, seq_p_of_max = 1/8, full_return = FALSE)
+getPopularMutationCount(data, germline_db, v_call = "V_CALL",
+  seq = "SEQUENCE_IMGT", gene_min = 0.001, seq_min = 50,
+  seq_p_of_max = 1/8, full_return = FALSE)
 }
 \arguments{
 \item{data}{a \code{data.frame} in the Change-O format. See
@@ -13,6 +14,13 @@ getPopularMutationCount(data, germline_db, gene_min = 0.001,
 columns.}
 
 \item{germline_db}{A named list of IMGT-gapped germline sequences.}
+
+\item{v_call}{name of the column in \code{data} with V allele calls. 
+Default is V_CALL.}
+
+\item{seq}{name of the column in \code{data} with the 
+aligned, IMGT-numbered, V(D)J nucleotide sequence.
+Default is SEQUENCE_IMG}
 
 \item{gene_min}{The portion of all unique sequences a gene must
 constitute to avoid exclusion.}
@@ -35,7 +43,7 @@ A data frame of genes that have a frequent sequence mutation count
 for each V gene and returns the mutation count of those sequences.
 }
 \examples{
-getPopularMutationCount(SampleDb, GermlineIGHV)
+getPopularMutationCount(SampleDb, SampleGermlineIGHV)
 
 }
 \seealso{

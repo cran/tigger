@@ -5,8 +5,8 @@
 \title{Infer a subject-specific genotype using a frequency method}
 \usage{
 inferGenotype(data, germline_db = NA, novel = NA, v_call = "V_CALL",
-  fraction_to_explain = 0.875, gene_cutoff = 1e-04,
-  find_unmutated = TRUE)
+  seq = "SEQUENCE_IMGT", fraction_to_explain = 0.875,
+  gene_cutoff = 1e-04, find_unmutated = TRUE)
 }
 \arguments{
 \item{data}{a \code{data.frame} containing V allele
@@ -27,8 +27,11 @@ germline sequences that will be utilized if
 Details.}
 
 \item{v_call}{column in \code{data} with V allele calls.
-Default is \code{"V_CALL"}.                            
-be provided in a column \code{"SEQUENCE_IMGT"}}
+Default is \code{"V_CALL"}.}
+
+\item{seq}{name of the column in \code{data} with the 
+aligned, IMGT-numbered, V(D)J nucleotide sequence.
+Default is SEQUENCE_IMGT.}
 
 \item{fraction_to_explain}{the portion of each gene that must be
 explained by the alleles that will be included
@@ -84,7 +87,7 @@ should be hundreds of allele calls per gene in the input.
 }
 \examples{
 # Infer IGHV genotype, using only unmutated sequences, including novel alleles
-inferGenotype(SampleDb, germline_db=GermlineIGHV, novel=SampleNovel,
+inferGenotype(SampleDb, germline_db=SampleGermlineIGHV, novel=SampleNovel,
               find_unmutated=TRUE)
 
 }

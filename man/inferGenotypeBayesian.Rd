@@ -5,14 +5,14 @@
 \title{Infer a subject-specific genotype using a Bayesian approach}
 \usage{
 inferGenotypeBayesian(data, germline_db = NA, novel = NA,
-  v_call = "V_CALL", find_unmutated = TRUE, priors = c(0.6, 0.4, 0.4,
-  0.35, 0.25, 0.25, 0.25, 0.25, 0.25))
+  v_call = "V_CALL", seq = "SEQUENCE_IMGT", find_unmutated = TRUE,
+  priors = c(0.6, 0.4, 0.4, 0.35, 0.25, 0.25, 0.25, 0.25, 0.25))
 }
 \arguments{
 \item{data}{a \code{data.frame} containing V allele
 calls from a single subject. If \code{find_unmutated} 
 is \code{TRUE}, then the sample IMGT-gapped V(D)J sequence 
-should be provided in a column \code{"SEQUENCE_IMGT"}}
+should be provided in column \code{sequence_alignment}}
 
 \item{germline_db}{named vector of sequences containing the
 germline sequences named in \code{allele_calls}. 
@@ -25,6 +25,10 @@ germline sequences that will be utilized if
 
 \item{v_call}{column in \code{data} with V allele calls.
 Default is \code{"V_CALL"}.}
+
+\item{seq}{name of the column in \code{data} with the 
+aligned, IMGT-numbered, V(D)J nucleotide sequence.
+Default is SEQUENCE_IMGT.}
 
 \item{find_unmutated}{if \code{TRUE}, use \code{germline_db} to
 find which samples are unmutated. Not needed
@@ -91,7 +95,7 @@ should be hundreds of allele calls per gene in the input.
 }
 \examples{
 # Infer IGHV genotype, using only unmutated sequences, including novel alleles
-inferGenotypeBayesian(SampleDb, germline_db=GermlineIGHV, novel=SampleNovel, 
+inferGenotypeBayesian(SampleDb, germline_db=SampleGermlineIGHV, novel=SampleNovel, 
                       find_unmutated=TRUE)
 
 }

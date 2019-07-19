@@ -1,3 +1,25 @@
+Version 0.4.0 July 18, 2019
+-------------------------------------------------------------------------------
+
+Dependencies:
+
++ Upgraded to alakazam >= 0.3.0, shazam >= 0.2.0, dplyr >= 0.8.1 and ggplot2 >= 3.1.1
+
+Bug Fixes:
+
++ Fixed bug in `sortAlleles` that was not sorting correctly TR gene names.
++ Fixed bug in `positionMutations` that was counting `.` as mutated position.
+
+New Features:
+
++ Updated IGHV germline gene segment alleles in `GermlineIGHV` and moved
+  old annotations to `SampleGermlineIGHV`.
++ Added the option to specify with arguments the names of the columns that
+  contain V call (`v_call`), J call (`j_call`), sequence alignment (`seq`),
+  junction (`junction`) and junction length (`junction_length`) in all functions
+  that use this information.
+
+
 Version 0.3.1 October 19, 2018
 -------------------------------------------------------------------------------
 
@@ -46,6 +68,8 @@ Backwards Incompatible Refactors:
 + Changed the return behavior of `reassignAlleles` so that it returns the 
   input data.frame with the `V_CALL_GENOTYPED` column appended or overwritten.
 + `cleanSeqs` will no longer replace `.` characters with `-`.
++ Renamed `clip_db` to `data` in `findNovelAlleles`, `plotNovel`, 
+  `inferGenotype` and `reassignAlleles`.
 
 
 Version 0.2.11 September 21, 2017
