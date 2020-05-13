@@ -4,9 +4,15 @@
 \alias{inferGenotypeBayesian}
 \title{Infer a subject-specific genotype using a Bayesian approach}
 \usage{
-inferGenotypeBayesian(data, germline_db = NA, novel = NA,
-  v_call = "V_CALL", seq = "SEQUENCE_IMGT", find_unmutated = TRUE,
-  priors = c(0.6, 0.4, 0.4, 0.35, 0.25, 0.25, 0.25, 0.25, 0.25))
+inferGenotypeBayesian(
+  data,
+  germline_db = NA,
+  novel = NA,
+  v_call = "v_call",
+  seq = "sequence_alignment",
+  find_unmutated = TRUE,
+  priors = c(0.6, 0.4, 0.4, 0.35, 0.25, 0.25, 0.25, 0.25, 0.25)
+)
 }
 \arguments{
 \item{data}{a \code{data.frame} containing V allele
@@ -24,11 +30,11 @@ germline sequences that will be utilized if
 \code{find_unmutated} is \code{TRUE}. See Details.}
 
 \item{v_call}{column in \code{data} with V allele calls.
-Default is \code{"V_CALL"}.}
+Default is \code{"v_call"}.}
 
 \item{seq}{name of the column in \code{data} with the 
 aligned, IMGT-numbered, V(D)J nucleotide sequence.
-Default is SEQUENCE_IMGT.}
+Default is \code{"sequence_alignment"}.}
 
 \item{find_unmutated}{if \code{TRUE}, use \code{germline_db} to
 find which samples are unmutated. Not needed
@@ -55,17 +61,17 @@ of the likelihood of each model and the log10 of the Bayes factor. The output
 contains the following columns:
 
 \itemize{
-  \item \code{GENE}: The gene name without allele.
-  \item \code{ALLELES}: Comma separated list of alleles for the given \code{GENE}.
-  \item \code{COUNTS}: Comma separated list of observed sequences for each 
-        corresponding allele in the \code{ALLELES} list.
-  \item \code{TOTAL}: The total count of observed sequences for the given \code{GENE}.
-  \item \code{NOTE}: Any comments on the inferrence.
-  \item \code{KH}: log10 likelihood that the \code{GENE} is homozygous.
-  \item \code{KD}: log10 likelihood that the \code{GENE} is heterozygous.
-  \item \code{KT}: log10 likelihood that the \code{GENE} is trizygous
-  \item \code{KQ}: log10 likelihood that the \code{GENE} is quadrozygous.
-  \item \code{K_DIFF}: log10 ratio of the highest to second-highest zygosity likelihoods.
+  \item \code{gene}: The gene name without allele.
+  \item \code{alleles}: Comma separated list of alleles for the given \code{gene}.
+  \item \code{counts}: Comma separated list of observed sequences for each 
+        corresponding allele in the \code{alleles} list.
+  \item \code{total}: The total count of observed sequences for the given \code{gene}.
+  \item \code{note}: Any comments on the inferrence.
+  \item \code{kh}: log10 likelihood that the \code{gene} is homozygous.
+  \item \code{kd}: log10 likelihood that the \code{gene} is heterozygous.
+  \item \code{kt}: log10 likelihood that the \code{gene} is trizygous
+  \item \code{kq}: log10 likelihood that the \code{gene} is quadrozygous.
+  \item \code{k_diff}: log10 ratio of the highest to second-highest zygosity likelihoods.
 }
 }
 \description{
@@ -95,8 +101,8 @@ should be hundreds of allele calls per gene in the input.
 }
 \examples{
 # Infer IGHV genotype, using only unmutated sequences, including novel alleles
-inferGenotypeBayesian(SampleDb, germline_db=SampleGermlineIGHV, novel=SampleNovel, 
-                      find_unmutated=TRUE)
+inferGenotypeBayesian(AIRRDb, germline_db=SampleGermlineIGHV, novel=SampleNovel, 
+                      find_unmutated=TRUE, v_call="v_call", seq="sequence_alignment")
 
 }
 \references{

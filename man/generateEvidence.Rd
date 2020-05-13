@@ -4,8 +4,16 @@
 \alias{generateEvidence}
 \title{Generate evidence}
 \usage{
-generateEvidence(data, novel, genotype, genotype_db, germline_db,
-  j_call = "J_CALL", junction = "JUNCTION", fields = NULL)
+generateEvidence(
+  data,
+  novel,
+  genotype,
+  genotype_db,
+  germline_db,
+  j_call = "j_call",
+  junction = "junction",
+  fields = NULL
+)
 }
 \arguments{
 \item{data}{a \code{data.frame} containing sequence data that has been
@@ -24,11 +32,11 @@ Returned by \link{genotypeFasta}.}
 \link{findNovelAlleles} to identify novel alleles.}
 
 \item{j_call}{name of the column in \code{data} with J allele calls. 
-Default is J_CALL.}
+Default is \code{j_call}.}
 
 \item{junction}{Junction region nucleotide sequence, which includes
 the CDR3 and the two flanking conserved codons. Default
-is JUNCTION}
+is \code{junction}.}
 
 \item{fields}{character vector of column names used to split the data to 
 identify novel alleles, if any. If \code{NULL} then the data is 
@@ -39,53 +47,53 @@ Returns the \code{genotype} input \code{data.frame} with the following additiona
 providing supporting evidence for each inferred allele:
 
 \itemize{
-  \item \code{FIELD_ID}: Data subset identifier, defined with the input paramter \code{fields}.
+  \item \code{field_id}: Data subset identifier, defined with the input paramter \code{fields}.
   \item A variable number of columns, specified with the input parameter \code{fields}.
-  \item \code{POLYMORPHISM_CALL}: The novel allele call.
-  \item \code{NOVEL_IMGT}: The novel allele sequence.
-  \item \code{CLOSEST_REFERENCE}: The closest reference gene and allele in 
+  \item \code{polymorphism_call}: The novel allele call.
+  \item \code{novel_imgt}: The novel allele sequence.
+  \item \code{closest_reference}: The closest reference gene and allele in 
         the \code{germline_db} database.
-  \item \code{CLOSEST_REFERENCE_IMGT}: Sequence of the closest reference gene and 
+  \item \code{closest_reference_imgt}: Sequence of the closest reference gene and 
         allele in the \code{germline_db} database.
-  \item \code{GERMLINE_CALL}: The input (uncorrected) V call.
-  \item \code{GERMLINE_IMGT}: Germline sequence for \code{GERMLINE_CALL}.
-  \item \code{NT_DIFF}: Number of nucleotides that differ between the new allele and
-        the closest reference (\code{CLOSEST_REFERENCE}) in the \code{germline_db} database.
-  \item \code{NT_SUBSTITUTIONS}: A comma separated list of specific nucleotide 
+  \item \code{germline_call}: The input (uncorrected) V call.
+  \item \code{germline_imgt}: Germline sequence for \code{germline_call}.
+  \item \code{nt_diff}: Number of nucleotides that differ between the new allele and
+        the closest reference (\code{closest_reference}) in the \code{germline_db} database.
+  \item \code{nt_substitutions}: A comma separated list of specific nucleotide 
         differences (e.g. \code{112G>A}) in the novel allele.
-  \item \code{AA_DIFF}: Number of amino acids that differ between the new allele and the closest 
-        reference (\code{CLOSEST_REFERENCE}) in the \code{germline_db} database.
-  \item \code{AA_SUBSTITUTIONS}: A comma separated list with specific amino acid 
+  \item \code{aa_diff}: Number of amino acids that differ between the new allele and the closest 
+        reference (\code{closest_reference}) in the \code{germline_db} database.
+  \item \code{aa_substitutions}: A comma separated list with specific amino acid 
         differences (e.g. \code{96A>N}) in the novel allele.
-  \item \code{SEQUENCES}: Number of sequences unambiguosly assigned to this allele.
-  \item \code{UNMUTATED_SEQUENCES}: Number of records with the unmutated novel allele sequence.
-  \item \code{UNMUTATED_FREQUENCY}: Proportion of records with the unmutated novel allele 
-        sequence (\code{UNMUTATED_SEQUENCES / SEQUENCE}).
-  \item \code{ALLELIC_PERCENTAGE}: Percentage at which the (unmutated) allele is observed 
+  \item \code{sequences}: Number of sequences unambiguosly assigned to this allele.
+  \item \code{unmutated_sequences}: Number of records with the unmutated novel allele sequence.
+  \item \code{unmutated_frequency}: Proportion of records with the unmutated novel allele 
+        sequence (\code{unmutated_sequences / sequences}).
+  \item \code{allelic_percentage}: Percentage at which the (unmutated) allele is observed 
         in the sequence dataset compared  to other (unmutated) alleles.
-  \item \code{UNIQUE_JS}: Number of unique J sequences found associated with the 
+  \item \code{unique_js}: Number of unique J sequences found associated with the 
         novel allele. The sequences are those who have been unambiguously assigned 
-        to the novel allelle (\code{POLYMORPHISM_CALL}).
-  \item \code{UNIQUE_CDR3S}: Number of unique CDR3s associated with the inferred allele.
+        to the novel allelle (\code{polymorphism_call}).
+  \item \code{unique_cdr3s}: Number of unique CDR3s associated with the inferred allele.
         The sequences are those who have been unambiguously assigned to the 
-        novel allelle (POLYMORPHISM_CALL).
-  \item \code{MUT_MIN}: Minimum mutation considered by the algorithm.
-  \item \code{MUT_MAX}: Maximum mutation considered by the algorithm.
-  \item \code{POS_MIN}: First position of the sequence considered by the algorithm (IMGT numbering).
-  \item \code{POS_MAX}: Last position of the sequence considered by the algorithm (IMGT numbering).
-  \item \code{Y_INTERCEPT}: The y-intercept above which positions were considered 
+        novel allelle (polymorphism_call).
+  \item \code{mut_min}: Minimum mutation considered by the algorithm.
+  \item \code{mut_max}: Maximum mutation considered by the algorithm.
+  \item \code{pos_min}: First position of the sequence considered by the algorithm (IMGT numbering).
+  \item \code{pos_max}: Last position of the sequence considered by the algorithm (IMGT numbering).
+  \item \code{y_intercept}: The y-intercept above which positions were considered 
         potentially polymorphic.
-  \item \code{ALPHA}: Significance threshold to be used when constructing the 
+  \item \code{alpha}: Significance threshold to be used when constructing the 
         confidence interval for the y-intercept.
-  \item \code{MIN_SEQS}: Input \code{min_seqs}. The minimum number of total sequences 
+  \item \code{min_seqs}: Input \code{min_seqs}. The minimum number of total sequences 
         (within the desired mutational range and nucleotide range) required 
         for the samples to be considered.
-  \item \code{J_MAX}: Input \code{j_max}. The maximum fraction of sequences perfectly 
+  \item \code{j_max}: Input \code{j_max}. The maximum fraction of sequences perfectly 
         aligning to a potential novel allele that are allowed to utilize to a particular 
         combination of junction length and J gene.
-  \item \code{MIN_FRAC}: Input \code{min_frac}. The minimum fraction of sequences that must
+  \item \code{min_frac}: Input \code{min_frac}. The minimum fraction of sequences that must
         have usable nucleotides in a given position for that position to be considered.
-  \item \code{NOTE}: Comments regarding the novel allele inferrence.
+  \item \code{note}: Comments regarding the novel allele inferrence.
 }
 }
 \description{
@@ -95,16 +103,22 @@ allele detection and genotyping inferrences.
 \examples{
 \donttest{
 # Generate input data
-novel <- findNovelAlleles(SampleDb, SampleGermlineIGHV)
-genotype <- inferGenotype(SampleDb, find_unmutated=TRUE, 
+novel <- findNovelAlleles(AIRRDb, SampleGermlineIGHV,
+    v_call="v_call", j_call="j_call", junction="junction", 
+    junction_length="junction_length", seq="sequence_alignment")
+genotype <- inferGenotype(AIRRDb, find_unmutated=TRUE, 
                           germline_db=SampleGermlineIGHV,
-                          novel=novel)
+                          novel=novel,
+                          v_call="v_call", seq="sequence_alignment")
 genotype_db <- genotypeFasta(genotype, SampleGermlineIGHV, novel)
-data_db <- reassignAlleles(SampleDb, genotype_db)
+data_db <- reassignAlleles(AIRRDb, genotype_db, 
+v_call="v_call", seq="sequence_alignment")
 
 # Assemble evidence table
 evidence <- generateEvidence(data_db, novel, genotype, 
-                             genotype_db, SampleGermlineIGHV)
+                             genotype_db, SampleGermlineIGHV,
+                             j_call = "j_call", 
+                             junction = "junction")
 }
 
 }

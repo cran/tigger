@@ -22,6 +22,12 @@ Named vector of strings respresenting Ig alleles.
 \code{readIgFasta} reads a fasta-formatted file of immunoglobulin (Ig)
 sequences and returns a named vector of those sequences.
 }
+\examples{
+\dontrun{
+# germlines <- readIgFasta("ighv.fasta")
+}
+
+}
 \seealso{
 \link{writeFasta} to do the inverse.
 }

@@ -4,9 +4,11 @@
 \name{GermlineIGHV}
 \alias{GermlineIGHV}
 \title{Human IGHV germlines}
-\format{Values correspond to IMGT-gaped nuceltoide sequences (with
+\format{
+Values correspond to IMGT-gaped nuceltoide sequences (with
 nucleotides capitalized and gaps represented by ".") while names correspond
-to stripped-down IMGT allele names (e.g. "IGHV1-18*01").}
+to stripped-down IMGT allele names (e.g. "IGHV1-18*01").
+}
 \description{
 A \code{character} vector of all human IGHV germline gene segment alleles
 in IMGT/GENE-DB (2019-06-01, 372 alleles). 

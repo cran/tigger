@@ -7,13 +7,13 @@
 getMutCount(samples, allele_calls, germline_db)
 }
 \arguments{
-\item{samples}{a vector of IMGT-gapped sample V sequences}
+\item{samples}{vector of IMGT-gapped sample V sequences}
 
-\item{allele_calls}{a vector of strings respresenting Ig allele calls for
+\item{allele_calls}{vector of strings respresenting Ig allele calls for
 the sequences in \code{samples}, where multiple
 calls are separated by a comma}
 
-\item{germline_db}{a vector of named nucleotide germline sequences
+\item{germline_db}{vector of named nucleotide germline sequences
 matching the calls detailed in \code{allele_calls}}
 }
 \value{

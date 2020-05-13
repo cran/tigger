@@ -7,10 +7,10 @@
 selectNovel(novel, keep_alleles = FALSE)
 }
 \arguments{
-\item{novel}{a \code{data.frame} of the type returned by
+\item{novel}{\code{data.frame} of the type returned by
 \link{findNovelAlleles}.}
 
-\item{keep_alleles}{a \code{logical} indicating if different alleles
+\item{keep_alleles}{\code{logical} indicating if different alleles
 leading to the same novel sequence should be kept.
 See Details.}
 }

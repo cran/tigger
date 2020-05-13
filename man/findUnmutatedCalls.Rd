@@ -7,13 +7,13 @@
 findUnmutatedCalls(allele_calls, sample_seqs, germline_db)
 }
 \arguments{
-\item{allele_calls}{a vector of strings respresenting Ig allele calls,
+\item{allele_calls}{vector of strings respresenting Ig allele calls,
 where multiple calls are separated by a comma.}
 
 \item{sample_seqs}{V(D)J-rearranged sample sequences matching the order
 of the given \code{allele_calls}.}
 
-\item{germline_db}{a vector of named nucleotide germline sequences}
+\item{germline_db}{vector of named nucleotide germline sequences}
 }
 \value{
 A vector of strings containing the members of \code{allele_calls}
@@ -27,7 +27,7 @@ sequence, only the subset that would represent a perfect match is returned.
 }
 \examples{
 # Find which of the sample alleles are unmutated
-calls <- findUnmutatedCalls(SampleDb$V_CALL, SampleDb$SEQUENCE_IMGT, 
-         germline_db=SampleGermlineIGHV)
+calls <- findUnmutatedCalls(AIRRDb$v_call, AIRRDb$sequence_alignment, 
+                            germline_db=SampleGermlineIGHV)
 
 }

@@ -4,22 +4,28 @@
 \alias{plotGenotype}
 \title{Show a colorful representation of a genotype}
 \usage{
-plotGenotype(genotype, facet_by = NULL, gene_sort = c("name",
-  "position"), text_size = 12, silent = FALSE, ...)
+plotGenotype(
+  genotype,
+  facet_by = NULL,
+  gene_sort = c("name", "position"),
+  text_size = 12,
+  silent = FALSE,
+  ...
+)
 }
 \arguments{
-\item{genotype}{a \code{data.frame} of alleles denoting a genotype, 
+\item{genotype}{\code{data.frame} of alleles denoting a genotype, 
 as returned by \link{inferGenotype}.}
 
-\item{facet_by}{a column name in \code{genotype} to facet the plot by. 
-If \code{NULL}, then do not facet the plot.}
+\item{facet_by}{column name in \code{genotype} to facet the plot by. 
+if \code{NULL}, then do not facet the plot.}
 
-\item{gene_sort}{a string defining the method to use when sorting alleles.
-If \code{"name"} then sort in lexicographic order. If
+\item{gene_sort}{string defining the method to use when sorting alleles.
+if \code{"name"} then sort in lexicographic order. If
 \code{"position"} then sort by position in the locus, as
 determined by the final two numbers in the gene name.}
 
-\item{text_size}{the point size of the plotted text.}
+\item{text_size}{point size of the plotted text.}
 
 \item{silent}{if \code{TRUE} do not draw the plot and just return the ggplot
 object; if \code{FALSE} draw the plot.}

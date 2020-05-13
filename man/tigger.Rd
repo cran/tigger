@@ -3,7 +3,6 @@
 \docType{package}
 \name{tigger}
 \alias{tigger}
-\alias{tigger-package}
 \title{tigger}
 \description{
 Here we provide a \strong{T}ool for \strong{I}mmuno\strong{g}lobulin

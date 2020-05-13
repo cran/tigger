@@ -7,9 +7,9 @@
 sortAlleles(allele_calls, method = c("name", "position"))
 }
 \arguments{
-\item{allele_calls}{a vector of strings respresenting Ig allele names.}
+\item{allele_calls}{vector of strings respresenting Ig allele names.}
 
-\item{method}{a string defining the method to use when sorting alleles.
+\item{method}{string defining the method to use when sorting alleles.
 If \code{"name"} then sort in lexicographic order. If
 \code{"position"} then sort by position in the locus, as
 determined by the final two numbers in the gene name.}

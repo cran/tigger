@@ -4,18 +4,22 @@
 \alias{getMutatedPositions}
 \title{Find the location of mutations in a sequence}
 \usage{
-getMutatedPositions(samples, germlines, ignored_regex = "[\\\\.N-]",
-  match_instead = FALSE)
+getMutatedPositions(
+  samples,
+  germlines,
+  ignored_regex = "[\\\\.N-]",
+  match_instead = FALSE
+)
 }
 \arguments{
-\item{samples}{a vector of strings respresenting aligned sequences}
+\item{samples}{vector of strings respresenting aligned sequences}
 
-\item{germlines}{a vector of strings respresenting aligned sequences
+\item{germlines}{vector of strings respresenting aligned sequences
 to which \code{samples} will be compared. If only
 one string is submitted, it will be used for all
 \code{samples}.}
 
-\item{ignored_regex}{a regular expression indicating what characters
+\item{ignored_regex}{regular expression indicating what characters
 should be ignored (such as gaps and N nucleotides).}
 
 \item{match_instead}{if \code{TRUE}, the function returns the positions

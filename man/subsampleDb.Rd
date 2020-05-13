@@ -4,15 +4,22 @@
 \alias{subsampleDb}
 \title{Subsample repertoire}
 \usage{
-subsampleDb(data, gene = "V_CALL", mode = c("gene", "allele",
-  "family"), min_n = 1, max_n = NULL, group = NULL)
+subsampleDb(
+  data,
+  gene = "v_call",
+  mode = c("gene", "allele", "family"),
+  min_n = 1,
+  max_n = NULL,
+  group = NULL
+)
 }
 \arguments{
-\item{data}{a \code{data.frame} in Change-O format.}
+\item{data}{\code{data.frame} containing repertoire data.}
 
-\item{gene}{name of the column in \code{data} with allele calls}
+\item{gene}{name of the column in \code{data} with allele calls. Default
+is \code{v_call}.}
 
-\item{mode}{one of c("gene", "family", "allele") defining the degree of
+\item{mode}{one of \code{c("gene", "family", "allele")} defining the degree of
 specificity regarding allele calls when subsetting sequences.
 Determines how \code{data} will be split into subsets from 
 which the same number of sequences will be subsampled. See 
@@ -34,7 +41,7 @@ These groups will be subsampled independently. If
 automatically set for each \code{group}.}
 }
 \value{
-A \code{data.frame}, subsampled from \code{data}.
+Subsampled version of the input \code{data}.
 }
 \description{
 \code{subsampleDb} will sample the same number of sequences for each gene, family
@@ -51,7 +58,8 @@ but these duplicated samplings will be removed, and the final
 subsampled \code{data} will contain unique rows.
 }
 \examples{
-# subsampleDb(SampleDb)
+subsampleDb(AIRRDb)
+
 }
 \seealso{
 \link{selectNovel}

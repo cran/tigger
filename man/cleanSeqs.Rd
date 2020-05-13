@@ -7,7 +7,7 @@
 cleanSeqs(seqs)
 }
 \arguments{
-\item{seqs}{a vector of nucleotide sequences.}
+\item{seqs}{vector of nucleotide sequences.}
 }
 \value{
 A modified vector of nucleotide sequences.

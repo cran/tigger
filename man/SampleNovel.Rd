@@ -4,9 +4,11 @@
 \name{SampleNovel}
 \alias{SampleNovel}
 \title{Example novel allele detection results}
-\format{A \code{data.frame} where rows correspond to alleles checked for
+\format{
+A \code{data.frame} where rows correspond to alleles checked for
 polymorphisms and columns give results as well as paramaters used to run
-the test.}
+the test.
+}
 \description{
 A \code{data.frame} of novel allele detection results from \link{findNovelAlleles}. 
 Source data was a collection of V(D)J immunoglobulin sequences derived from a single

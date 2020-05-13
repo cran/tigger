@@ -4,72 +4,87 @@
 \alias{findNovelAlleles}
 \title{Find novel alleles from repertoire sequencing data}
 \usage{
-findNovelAlleles(data, germline_db, v_call = "V_CALL",
-  j_call = "J_CALL", seq = "SEQUENCE_IMGT", junction = "JUNCTION",
-  junction_length = "JUNCTION_LENGTH", germline_min = 200,
-  min_seqs = 50, auto_mutrange = TRUE, mut_range = 1:10,
-  pos_range = 1:312, y_intercept = 0.125, alpha = 0.05,
-  j_max = 0.15, min_frac = 0.75, nproc = 1)
+findNovelAlleles(
+  data,
+  germline_db,
+  v_call = "v_call",
+  j_call = "j_call",
+  seq = "sequence_alignment",
+  junction = "junction",
+  junction_length = "junction_length",
+  germline_min = 200,
+  min_seqs = 50,
+  auto_mutrange = TRUE,
+  mut_range = 1:10,
+  pos_range = 1:312,
+  y_intercept = 0.125,
+  alpha = 0.05,
+  j_max = 0.15,
+  min_frac = 0.75,
+  nproc = 1
+)
 }
 \arguments{
-\item{data}{a \code{data.frame} in Change-O format. See details.}
+\item{data}{\code{data.frame} containing repertoire data. See details.}
 
-\item{germline_db}{a vector of named nucleotide germline sequences
-matching the V calls in \code{data}.}
+\item{germline_db}{vector of named nucleotide germline sequences
+matching the V calls in \code{data}. These should be 
+the gapped reference germlines used to make the V calls.}
 
 \item{v_call}{name of the column in \code{data} with V allele calls. 
-Default is V_CALL.}
+Default is \code{v_call}.}
 
 \item{j_call}{name of the column in \code{data} with J allele calls. 
-Default is J_CALL.}
+Default is \code{j_call}.}
 
 \item{seq}{name of the column in \code{data} with the 
 aligned, IMGT-numbered, V(D)J nucleotide sequence.
-Default is SEQUENCE_IMGT.}
+Default is \code{sequence_alignment}.}
 
 \item{junction}{Junction region nucleotide sequence, which includes
 the CDR3 and the two flanking conserved codons. Default
-is JUNCTION.}
+is \code{junction}.}
 
 \item{junction_length}{Number of junction nucleotides in the junction sequence.
-Default is JUNCTION_LENGTH.}
+Default is \code{junction_length}.}
 
 \item{germline_min}{the minimum number of sequences that must have a
 particular germline allele call for the allele to
-be analyzed}
+be analyzed.}
 
-\item{min_seqs}{the minimum number of total sequences (within the
+\item{min_seqs}{minimum number of total sequences (within the
 desired mutational range and nucleotide range)
-required for the samples to be considered}
+required for the samples to be considered.}
 
 \item{auto_mutrange}{if \code{TRUE}, the algorithm will attempt to
 determine the appropriate mutation range
 automatically using the mutation count of the most
-common sequence assigned to each allele analyzed}
+common sequence assigned to each allele analyzed.}
 
-\item{mut_range}{the range of mutations that samples may carry and
-be considered by the algorithm}
+\item{mut_range}{range of mutations that samples may carry and
+be considered by the algorithm.}
 
-\item{pos_range}{the range of IMGT-numbered positions that should be
-considered by the algorithm}
+\item{pos_range}{range of IMGT-numbered positions that should be
+considered by the algorithm.}
 
-\item{y_intercept}{the y-intercept threshold above which positions should be
-considered potentially polymorphic}
+\item{y_intercept}{y-intercept threshold above which positions should be
+considered potentially polymorphic.}
 
-\item{alpha}{the alpha value used for determining whether the 
+\item{alpha}{alpha value used for determining whether the 
 fit y-intercept is greater than the \code{y_intercept}
-threshold}
+threshold.}
 
-\item{j_max}{the maximum fraction of sequences perfectly aligning
+\item{j_max}{maximum fraction of sequences perfectly aligning
 to a potential novel allele that are allowed to
 utilize to a particular combination of junction
-length and J gene}
+length and J gene. The closer to 1, the less strict 
+the filter for J gene diversity will be.}
 
-\item{min_frac}{the minimum fraction of sequences that must have
+\item{min_frac}{minimum fraction of sequences that must have
 usable nucleotides in a given position for that
-position to considered}
+position to considered.}
 
-\item{nproc}{the number of processors to use}
+\item{nproc}{number of processors to use.}
 }
 \value{
 A \code{data.frame} with a row for each known allele analyzed.
@@ -80,60 +95,60 @@ additional evidence.
 
 The output contains the following columns:
 \itemize{
-  \item \code{GERMLINE_CALL}: The input (uncorrected) V call.
-  \item \code{NOTE}: Comments regarding the inferrence.
-  \item \code{POLYMORPHISM_CALL}: The novel allele call.
-  \item \code{NT_SUBSTITUTIONS}: Mutations identified in the novel allele, relative
-        to the reference germline (\code{GERMLINE_CALL})
-  \item \code{NOVEL_IMGT}: The novel allele sequence.
-  \item \code{NOVEL_IMGT_COUNT}:  The number of times the sequence \code{NOVEL_IMGT} 
-        is found in the input data. Considers the subsequence of \code{NOVEL_IMGT} 
+  \item \code{germline_call}: The input (uncorrected) V call.
+  \item \code{note}: Comments regarding the inferrence.
+  \item \code{polymorphism_call}: The novel allele call.
+  \item \code{nt_substitutions}: Mutations identified in the novel allele, relative
+        to the reference germline (\code{germline_call})
+  \item \code{novel_imgt}: The novel allele sequence.
+  \item \code{novel_imgt_count}:  The number of times the sequence \code{novel_imgt} 
+        is found in the input data. Considers the subsequence of \code{novel_imgt} 
         in the \code{pos_range}.
-  \item \code{NOVEL_IMGT_UNIQUE_J}: Number of distinct J calls associated to \code{NOVEL_IMGT} 
-        in the input data. Considers the subsequence of \code{NOVEL_IMGT} in the \code{pos_range}.       
-  \item \code{NOVEL_IMGT_UNIQUE_CDR3}: Number of distinct CDR3 sequences associated
-        with \code{NOVEL_IMGT} in the input data. Considers the subsequence of \code{NOVEL_IMGT} 
+  \item \code{novel_imgt_unique_j}: Number of distinct J calls associated to \code{novel_imgt} 
+        in the input data. Considers the subsequence of \code{novel_imgt} in the \code{pos_range}.       
+  \item \code{novel_imgt_unique_cdr3}: Number of distinct CDR3 sequences associated
+        with \code{novel_imgt} in the input data. Considers the subsequence of \code{novel_imgt} 
         in the \code{pos_range}.                                              
-  \item \code{PERFECT_MATCH_COUNT}: Final number of sequences retained to call the new 
+  \item \code{perfect_match_count}: Final number of sequences retained to call the new 
         allele. These are unique sequences that have V segments that perfectly match 
         the predicted germline in the \code{pos_range}.
-  \item \code{PERFECT_MATCH_FREQ}: \code{PERFECT_MATCH_COUNT / GERMLINE_CALL_COUNT}
-  \item \code{GERMLINE_CALL_COUNT}: The number of sequences with the \code{GERMLINE_CALL} 
+  \item \code{perfect_match_freq}: \code{perfect_match_count / germline_call_count}
+  \item \code{germline_call_count}: The number of sequences with the \code{germline_call} 
         in the input data that were initially considered for the analysis.
-  \item \code{GERMLINE_CALL_FREQ}: The fraction of sequences with the \code{GERMLINE_CALL} 
+  \item \code{germline_call_freq}: The fraction of sequences with the \code{germline_call} 
         in the input data initially considered for the analysis.              
-  \item \code{GERMLINE_IMGT}: Germline sequence for \code{GERMLINE_CALL}.
-  \item \code{GERMLINE_IMGT_COUNT}: The number of times the \code{GERMLINE_IMGT} 
+  \item \code{germline_imgt}: Germline sequence for \code{germline_call}.
+  \item \code{germline_imgt_count}: The number of times the \code{germline_imgt} 
         sequence is found in the input data.
-  \item \code{MUT_MIN}: Minimum mutation considered by the algorithm.
-  \item \code{MUT_MAX}: Maximum mutation considered by the algorithm.
-  \item \code{MUT_PASS_COUNT}: Number of sequences in the mutation range.
-  \item \code{POS_MIN}: First position of the sequence considered by the algorithm (IMGT numbering).
-  \item \code{POS_MAX}: Last position of the sequence considered by the algorithm (IMGT numbering).
-  \item \code{Y_INTERCEPT}: The y-intercept above which positions were considered 
+  \item \code{mut_min}: Minimum mutation considered by the algorithm.
+  \item \code{mut_max}: Maximum mutation considered by the algorithm.
+  \item \code{mut_pass_count}: Number of sequences in the mutation range.
+  \item \code{pos_min}: First position of the sequence considered by the algorithm (IMGT numbering).
+  \item \code{pos_max}: Last position of the sequence considered by the algorithm (IMGT numbering).
+  \item \code{y_intercept}: The y-intercept above which positions were considered 
         potentially polymorphic.
-  \item \code{Y_INTERCEPT_PASS}: Number of positions that pass the \code{Y_INTERCEPT} threshold.
-  \item \code{SNP_PASS}: Number of sequences that pass the \code{Y_INTERCEPT} threshold and are
+  \item \code{y_intercept_pass}: Number of positions that pass the \code{y_intercept} threshold.
+  \item \code{snp_pass}: Number of sequences that pass the \code{y_intercept} threshold and are
         within the desired nucleotide range (\code{min_seqs}).
-  \item \code{UNMUTATED_COUNT}: Number of unmutated sequences.
-  \item \code{UNMUTATED_FREQ}: Number of unmutated sequences over \code{GERMLINE_IMGT_COUNT}.
-  \item \code{UNMUTATED_SNP_J_GENE_LENGTH_COUNT}: Number of distinct combinations
+  \item \code{unmutated_count}: Number of unmutated sequences.
+  \item \code{unmutated_freq}: Number of unmutated sequences over \code{germline_imgt_count}.
+  \item \code{unmutated_snp_j_gene_length_count}: Number of distinct combinations
         of SNP, J gene, and junction length.     
-  \item \code{SNP_MIN_SEQS_J_MAX_PASS}: Number of SNPs that pass both the \code{min_seqs} 
+  \item \code{snp_min_seqs_j_max_pass}: Number of SNPs that pass both the \code{min_seqs} 
         and \code{j_max} thresholds.
-  \item \code{ALPHA}: Significance threshold to be used when constructing the 
+  \item \code{alpha}: Significance threshold to be used when constructing the 
         confidence interval for the y-intercept.
-  \item \code{MIN_SEQS}: Input \code{min_seqs}. The minimum number of total sequences 
+  \item \code{min_seqs}: Input \code{min_seqs}. The minimum number of total sequences 
         (within the desired mutational range and nucleotide range) required 
         for the samples to be considered.
-  \item \code{J_MAX}: Input \code{j_max}. The maximum fraction of sequences perfectly 
+  \item \code{j_max}: Input \code{j_max}. The maximum fraction of sequences perfectly 
         aligning to a potential novel allele that are allowed to utilize to a particular 
         combination of junction length and J gene.
-  \item \code{MIN_FRAC}: Input \code{min_frac}. The minimum fraction of sequences that must
+  \item \code{min_frac}: Input \code{min_frac}. The minimum fraction of sequences that must
         have usable nucleotides in a given position for that position to be considered.
 }
 
-The following comments can appear in the \code{NOTE} column:
+The following comments can appear in the \code{note} column:
 
 \itemize{
   \item \emph{Novel allele found}: A novel allele was detected.
@@ -166,13 +181,14 @@ allele utilize a wide range of combinations of J gene and junction length.
 }
 \examples{
 \donttest{
-# Find novel alleles and return relevant data
-novel <- findNovelAlleles(SampleDb, SampleGermlineIGHV)
-selectNovel(novel)
 # Note: In this example, with SampleGermlineIGHV,
-# which contains reference germlines retrieved on August 2018,
+# which contains reference germlines retrieved on August 2014,
 # TIgGER finds the allele IGHV1-8*02_G234T. This allele
 # was added to IMGT as IGHV1-8*03 on March 28, 2018.
+
+# Find novel alleles and return relevant data
+novel <- findNovelAlleles(AIRRDb, SampleGermlineIGHV)
+selectNovel(novel)
 }
 
 }
@@ -180,6 +196,6 @@ selectNovel(novel)
 \link{selectNovel} to filter the results to show only novel alleles.
 \link{plotNovel} to visualize the data supporting any
 novel alleles hypothesized to be present in the data and
-\link{inferGenotype} to determine if the novel alleles are frequent
+\link{inferGenotype} and \link{inferGenotypeBayesian} to determine if the novel alleles are frequent
 enought to be included in the subject's genotype.
 }

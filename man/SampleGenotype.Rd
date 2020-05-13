@@ -4,8 +4,10 @@
 \name{SampleGenotype}
 \alias{SampleGenotype}
 \title{Example genotype inferrence results}
-\format{A \code{data.frame} where rows correspond to genes carried by an
-individual and columns lists the alleles of those genes and their counts.}
+\format{
+A \code{data.frame} where rows correspond to genes carried by an
+individual and columns lists the alleles of those genes and their counts.
+}
 \description{
 A \code{data.frame} of genotype inference results from \link{inferGenotype}
 after novel allele detection via \link{findNovelAlleles}.

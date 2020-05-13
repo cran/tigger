@@ -65,25 +65,26 @@ TIgGER requires two main inputs:
 1. Pre-processed Ig sequence data
 2. Database germline sequences
 
-AIRR-seq data is input as a data frame following the Change-O standard where 
+AIRR-seq data is input as a data frame following the AIRR or Change-O standard where 
 each row represents a unique observation and and columns represent data about 
 that observation. The required names of the required columns are provided below 
 along with a description of each.
 
-Column Name           | Description 
-----------------------|---------------------------------------------------------
-`SEQUENCE_IMGT`       | V(D)J sequence gapped in the IMGT gapped format ([[3]][3])
-`V_CALL`              | (Comma separated) name(s) of the nearest V allele(s) 
-`J_CALL`              | (Comma separated) name(s) of the nearest J allele(s) 
-`JUNCTION_LENGTH`     | Length of the junction region of the V(D)J sample
+Column Name                                 | Description 
+--------------------------------------------|---------------------------------------------------------
+`SEQUENCE_IMGT` or `sequence_alignment`     | V(D)J sequence gapped in the IMGT gapped format ([[3]][3])
+`V_CALL` or `v_call`                        | (Comma separated) name(s) of the nearest V allele(s) 
+`J_CALL` or `j_call`                        | (Comma separated) name(s) of the nearest J allele(s) 
+`JUNCTION` or `junction`                    | Junction nucleotide sequence
+`JUNCTION_LENGTH` or `junction_length`      | Length of the junction region of the V(D)J sample
 
-An example dataset is provided with the `tigger` package as `SampleDb`. It 
-contains unique functional sequences assigned to IGHV1 family genes isolated 
-from individual PGP1 (referenced in Gadala-Maria *et al.* 2015).
+An example dataset is provided with the `tigger` package as `SampleDb` (Change-O format)
+and `AIRRDb` (AIRR format). It contains unique functional sequences assigned to IGHV1 family genes 
+isolated from individual PGP1 (referenced in Gadala-Maria *et al.* 2015).
 
 The database of germline sequences should be provided in FASTA format with 
 sequences gapped according to the IMGT numbering scheme ([[3]][3]). IGHV alleles in
-the IMGT database (build 201408-4) are provided with this package as `GermlineIGHV`. 
+the IMGT database (build 2014-08-4) are provided with this package as `SampleGermlineIGHV`. 
 You may read in your own fasta file using `readIgFasta`.
 
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
@@ -105,13 +106,12 @@ changed in `findNovelAlleles`).
 
 ```{r, eval=TRUE, warning=FALSE}
 # Detect novel alleles
-novel <- findNovelAlleles(SampleDb, GermlineIGHV, nproc=1)
+novel <- findNovelAlleles(AIRRDb, SampleGermlineIGHV, nproc=1)
 ```
 
 ```{r, eval=TRUE, warning=FALSE}
 # Extract and view the rows that contain successful novel allele calls
 novel_rows <- selectNovel(novel)
-novel_rows[1:3]
 ```
 
 The TIgGER procedure for identifying novel alleles (see citation above) involves
@@ -144,8 +144,10 @@ made by `findNovelAlleles` using the function `plotNovel`.
 
 ```{r, eval=TRUE, warning=FALSE, fig.width=6, fig.height=8}
 # Plot evidence of the first (and only) novel allele from the example data
-plotNovel(SampleDb, novel[1, ])
+novel_row <- which(!is.na(novel$polymorphism_call))[1]
+plotNovel(AIRRDb, novel[novel_row, ])
 ```
+
 
 ## Inferring genotypes
 
@@ -175,10 +177,10 @@ this vector to a fasta file, `writeFasta` may be used.
 ```{r, eval=TRUE, warning=FALSE, fig.width=4, fig.height=3}
 # Infer the individual's genotype, using only unmutated sequences and checking
 # for the use of the novel alleles inferred in the earlier step.
-geno <- inferGenotype(SampleDb, germline_db=GermlineIGHV, novel=novel,
+geno <- inferGenotype(AIRRDb, germline_db=SampleGermlineIGHV, novel=novel,
                       find_unmutated=TRUE)
 # Save the genotype sequences to a vector
-genotype_db <- genotypeFasta(geno, GermlineIGHV, novel)
+genotype_db <- genotypeFasta(geno, SampleGermlineIGHV, novel)
 # Visualize the genotype and sequence counts
 print(geno)
 # Make a colorful visualization. Bars indicate presence, not proportion.
@@ -201,7 +203,7 @@ method doesn't use the strict cutoff criterion `fraction_to_explain` that
 
 ```{r, eval=TRUE, warning=FALSE, fig.width=4, fig.height=3}
 # Infer the individual's genotype, using the bayesian method
-geno_bayesian <- inferGenotypeBayesian(SampleDb, germline_db=GermlineIGHV, 
+geno_bayesian <- inferGenotypeBayesian(AIRRDb, germline_db=SampleGermlineIGHV, 
                                        novel=novel, find_unmutated=TRUE)
 # Visualize the genotype and sequence counts
 print(geno_bayesian)
@@ -221,8 +223,8 @@ positions). Additionally, assignments to erroneous not-in-genotype alleles
 
 ```{r, eval=TRUE, warning=FALSE}
 # Use the personlized genotype to determine corrected allele assignments
-# Updated genotype will be placed in the V_CALL_GENOTYPED column
-sample_db <- reassignAlleles(SampleDb, genotype_db)
+# Updated genotype will be placed in the v_call_genotyped column
+sample_db <- reassignAlleles(AIRRDb, genotype_db)
 ```
 
 From here, one may proceed with further downstream analyses, but with the
@@ -233,7 +235,7 @@ can be seen below.
 
 ```{r, eval=TRUE, warning=FALSE}
 # Find the set of alleles in the original calls that were not in the genotype
-not_in_genotype <- sample_db$V_CALL %>%
+not_in_genotype <- sample_db$v_call %>%
     strsplit(",") %>%
     unlist() %>%
     unique() %>%
@@ -242,10 +244,10 @@ not_in_genotype <- sample_db$V_CALL %>%
 # Determine the fraction of calls that were ambigious before/after correction
 # and the fraction that contained original calls to non-genotype alleles. Note
 # that by design, only genotype alleles are allowed in "after" calls.
-data.frame(Ambiguous=c(mean(grepl(",", sample_db$V_CALL)),
-                       mean(grepl(",", sample_db$V_CALL_GENOTYPED))),
-           NotInGenotype=c(mean(sample_db$V_CALL %in% not_in_genotype),
-                           mean(sample_db$V_CALL_GENOTYPED %in% not_in_genotype)),
+data.frame(Ambiguous=c(mean(grepl(",", sample_db$v_call)),
+                       mean(grepl(",", sample_db$v_call_genotyped))),
+           NotInGenotype=c(mean(sample_db$v_call %in% not_in_genotype),
+                           mean(sample_db$v_call_genotyped %in% not_in_genotype)),
            row.names=c("Before", "After")) %>% 
     t() %>% round(3)
 ```
@@ -257,16 +259,15 @@ information, the final genotype sequences and the starting reference germlines
 to build a table of evidence metrics supporting the final novel V allele detection.
 
 ```{r, eval=TRUE, warning=FALSE}
-evidence <- generateEvidence(sample_db, novel, geno, genotype_db, GermlineIGHV,
-  j_call = "J_CALL", junction = "JUNCTION", fields = NULL)
+evidence <- generateEvidence(sample_db, novel, geno, genotype_db, SampleGermlineIGHV, fields = NULL)
 
 evidence %>%
-  select(GENE, ALLELE, POLYMORPHISM_CALL, SEQUENCES, UNMUTATED_FREQUENCY)
+  select(gene, allele, polymorphism_call, sequences, unmutated_frequency)
 ```
 
-In this example, `r evidence[["SEQUENCES"]]` sequences were unambiguously assigned
-to allele `r evidence[["POLYMORPHISM_CALL"]]`, 
-`r round(100*evidence[["UNMUTATED_FREQUENCY"]],2)`%
+In this example, `r evidence[["sequences"]]` sequences were unambiguously assigned
+to allele `r evidence[["polymorphism_call"]]`, 
+`r round(100*evidence[["unmutated_frequency"]],2)`%
 of them unmutated.
 
 ## References

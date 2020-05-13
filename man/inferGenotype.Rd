@@ -4,22 +4,27 @@
 \alias{inferGenotype}
 \title{Infer a subject-specific genotype using a frequency method}
 \usage{
-inferGenotype(data, germline_db = NA, novel = NA, v_call = "V_CALL",
-  seq = "SEQUENCE_IMGT", fraction_to_explain = 0.875,
-  gene_cutoff = 1e-04, find_unmutated = TRUE)
+inferGenotype(
+  data,
+  germline_db = NA,
+  novel = NA,
+  v_call = "v_call",
+  seq = "sequence_alignment",
+  fraction_to_explain = 0.875,
+  gene_cutoff = 1e-04,
+  find_unmutated = TRUE
+)
 }
 \arguments{
-\item{data}{a \code{data.frame} containing V allele
-calls from a single subject. If
-\code{find_unmutated} is \code{TRUE}, then
-the sample IMGT-gapped V(D)J sequence should}
+\item{data}{\code{data.frame} containing V allele
+calls from a single subject.}
 
 \item{germline_db}{named vector of sequences containing the
 germline sequences named in
 \code{allele_calls}. Only required if
 \code{find_unmutated} is \code{TRUE}.}
 
-\item{novel}{an optional \code{data.frame} of the type
+\item{novel}{optional \code{data.frame} of the type
 novel returned by
 \link{findNovelAlleles} containing
 germline sequences that will be utilized if
@@ -27,11 +32,11 @@ germline sequences that will be utilized if
 Details.}
 
 \item{v_call}{column in \code{data} with V allele calls.
-Default is \code{"V_CALL"}.}
+Default is \code{"v_call"}.}
 
 \item{seq}{name of the column in \code{data} with the 
 aligned, IMGT-numbered, V(D)J nucleotide sequence.
-Default is SEQUENCE_IMGT.}
+Default is \code{sequence_alignment}.}
 
 \item{fraction_to_explain}{the portion of each gene that must be
 explained by the alleles that will be included
@@ -53,12 +58,12 @@ A \code{data.frame} of alleles denoting the genotype of the subject containing
 the following columns:
           
 \itemize{
-  \item \code{GENE}: The gene name without allele.
-  \item \code{ALLELES}: Comma separated list of alleles for the given \code{GENE}.
-  \item \code{COUNTS}: Comma separated list of observed sequences for each 
-        corresponding allele in the \code{ALLELES} list.
-  \item \code{TOTAL}: The total count of observed sequences for the given \code{GENE}.
-  \item \code{NOTE}: Any comments on the inferrence.
+  \item \code{gene}: The gene name without allele.
+  \item \code{alleles}: Comma separated list of alleles for the given \code{gene}.
+  \item \code{counts}: Comma separated list of observed sequences for each 
+        corresponding allele in the \code{alleles} list.
+  \item \code{total}: The total count of observed sequences for the given \code{gene}.
+  \item \code{note}: Any comments on the inferrence.
 }
 }
 \description{
@@ -87,7 +92,7 @@ should be hundreds of allele calls per gene in the input.
 }
 \examples{
 # Infer IGHV genotype, using only unmutated sequences, including novel alleles
-inferGenotype(SampleDb, germline_db=SampleGermlineIGHV, novel=SampleNovel,
+inferGenotype(AIRRDb, germline_db=SampleGermlineIGHV, novel=SampleNovel,
               find_unmutated=TRUE)
 
 }

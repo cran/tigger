@@ -7,10 +7,10 @@
 genotypeFasta(genotype, germline_db, novel = NA)
 }
 \arguments{
-\item{genotype}{a \code{data.frame} of alleles denoting a genotype, 
+\item{genotype}{\code{data.frame} of alleles denoting a genotype, 
 as returned by \link{inferGenotype}.}
 
-\item{germline_db}{a vector of named nucleotide germline sequences
+\item{germline_db}{vector of named nucleotide germline sequences
 matching the alleles detailed in \code{genotype}.}
 
 \item{novel}{an optional \code{data.frame} containing putative

@@ -7,7 +7,7 @@
 writeFasta(named_sequences, file, width = 60, append = FALSE)
 }
 \arguments{
-\item{named_sequences}{a vector of named string representing sequences}
+\item{named_sequences}{vector of named string representing sequences}
 
 \item{file}{the name of the output file.}
 
@@ -23,6 +23,12 @@ A named vector of strings respresenting Ig alleles.
 \description{
 \code{writeFasta} writes a named vector of sequences to a file in fasta
 format.
+}
+\examples{
+\dontrun{
+# writeFasta(germlines, "ighv.fasta")
+}
+
 }
 \seealso{
 \link{readIgFasta} to do the inverse.

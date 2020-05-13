@@ -4,7 +4,8 @@
 \name{SampleDb}
 \alias{SampleDb}
 \title{Example human immune repertoire data}
-\format{A \code{data.frame} where rows correspond to unique V(D)J sequences and
+\format{
+A \code{data.frame} where rows correspond to unique V(D)J sequences and
 columns include:
 \itemize{
   \item \code{"SEQUENCE_IMGT"}: IMGT-gapped V(D)J nucleotide sequence.
@@ -12,7 +13,8 @@ columns include:
   \item \code{"D_CALL"}: IMGT/HighV-QUEST D segment allele calls.
   \item \code{"J_CALL"}: IMGT/HighV-QUEST J segment allele calls.
   \item \code{"JUNCTION_LENGTH"}: Junction region length.
-}}
+}
+}
 \description{
 A \code{data.frame} of example V(D)J immunoglobulin sequences derived from a 
 single individual (PGP1), sequenced on the Roche 454 platform, and assigned by
@@ -26,6 +28,6 @@ IMGT/HighV-QUEST to IGHV1 family alleles.
 }
 }
 \seealso{
-See \link{airrDb} for an AIRR formatted version of \code{SampleDb}.
+See \link{AIRRDb} for an AIRR formatted version of \code{SampleDb}.
 }
 \keyword{data}
