@@ -31,7 +31,7 @@
 #'                            the CDR3 and the two flanking conserved codons. Default
 #'                            is \code{junction}.
 #' @param    junction_length  Number of junction nucleotides in the junction sequence.
-#'                            Default is \code{junction_length}.                        
+#'                            Default is \code{junction_length}.
 #' @param    germline_min     the minimum number of sequences that must have a
 #'                            particular germline allele call for the allele to
 #'                            be analyzed.
@@ -43,6 +43,15 @@
 #'                            be considered by the algorithm.
 #' @param    pos_range        range of IMGT-numbered positions that should be
 #'                            considered by the algorithm.
+#' @param    pos_range_max    Name of the column in \code{data} with the ending
+#'                            positions of the V alignment in the germline 
+#'                            (usually \code{v_germline_end}). The end of the alignment will
+#'                            be used to limit the range of positions to be 
+#'                            considered to count mutations. With \code{NULL} all 
+#'                            positions in the IMGT V region will be considered. In
+#'                            this case, in sequences where the V was trimmed 
+#'                            on the 3', mutated nucleotides could include nucleotides
+#'                            from the CDR3.                            
 #' @param    alpha            alpha value used for determining whether the 
 #'                            fit y-intercept is greater than the \code{y_intercept}
 #'                            threshold.
@@ -52,7 +61,8 @@
 #'                            to a potential novel allele that are allowed to
 #'                            utilize to a particular combination of junction
 #'                            length and J gene. The closer to 1, the less strict 
-#'                            the filter for J gene diversity will be.
+#'                            the filter for junction length and J gene diversity
+#'                            will be.
 #' @param    min_seqs         minimum number of total sequences (within the
 #'                            desired mutational range and nucleotide range)
 #'                            required for the samples to be considered.
@@ -127,6 +137,9 @@
 #' 
 #' \itemize{
 #'   \item \emph{Novel allele found}: A novel allele was detected.
+#'   \item \emph{Same as:}: The same novel allele sequence
+#'               has been identified multiple times. If this happens, the function
+#'               will also throw the message 'Duplicated polymorphism(s) found'.
 #'   \item \emph{Plurality sequence too rare}: No sequence is frequent enough to pass 
 #'         the J test (\code{j_max}).
 #'   \item \emph{A J-junction combination is too prevalent}: Not enough J diversity (\code{j_max}).
@@ -169,6 +182,7 @@ findNovelAlleles <- function(data, germline_db,
                              auto_mutrange=TRUE,
                              mut_range=1:10,
                              pos_range=1:312,
+                             pos_range_max = NULL,
                              y_intercept=0.125,
                              alpha=0.05,
                              j_max=0.15,
@@ -182,11 +196,11 @@ findNovelAlleles <- function(data, germline_db,
                                        v_call,
                                        j_call,
                                        junction_length,
-                                       junction)))
+                                       junction,ifelse(is.null(pos_range_max),"",pos_range_max))))
     gc()
     
     # Keep only the columns we need and clean up the sequences
-    missing <- c(seq, v_call, j_call, junction_length) %>%
+    missing <- c(seq, v_call, j_call, junction_length,pos_range_max) %>%
         setdiff(colnames(data))
     if (length(missing) != 0) {
         stop("Could not find required columns in the input data:\n  ",
@@ -229,6 +243,7 @@ findNovelAlleles <- function(data, germline_db,
                                               "germlines",
                                               "v_call","j_call",
                                               "junction", "junction_length",
+                                              "pos_range_max",
                                               "seq",
                                               "data",
                                               "min_seqs",
@@ -251,7 +266,7 @@ findNovelAlleles <- function(data, germline_db,
     out_list <- foreach(idx=iterators::icount(length(allele_groups))) %dopar% {
         # out_list <- lapply(1:length(allele_groups), function(idx) {  
         gc() 
-        # message(paste0("idx=",idx))
+        #message(paste0("idx=",idx))
         # Subset of data being analyzed
         allele_name <- names(allele_groups)[idx]
         germline <- germlines[allele_name]
@@ -332,7 +347,7 @@ findNovelAlleles <- function(data, germline_db,
             # Add a mutation count column and filter out sequences not in our range
             db_subset_mm <- mutationRangeSubset(db_subset, germline,
                                                mut_min:mut_max, pos_range,
-                                               seq=seq)
+                                               seq=seq, pos_range_max = pos_range_max)
             df_run$mut_pass_count[1] <- nrow(db_subset_mm)
             
             if(nrow(db_subset_mm) < min_seqs){
@@ -347,7 +362,7 @@ findNovelAlleles <- function(data, germline_db,
             # Duplicate each sequence for all the positions to be analyzed
             # and find which positions are mutated
             pos_db <- positionMutations(db_subset_mm, germline, pos_range,
-                                        seq=seq)
+                                        seq=seq, pos_range_max = pos_range_max)
             
             # Find positional mut freq vs seq mut count
             pos_muts <- pos_db %>%
@@ -385,11 +400,16 @@ findNovelAlleles <- function(data, germline_db,
             
             # Find the potential SNP positions and remove anything that matches
             # the germline at all those positions or any combo that is too rare
+            #message(idx)
+            #message(pass_y$POSITION)
             db_y_subset_mm <- db_subset_mm %>%
                 dplyr::group_by(1:n()) %>%
                 dplyr::mutate(SNP_STRING = superSubstring(!! rlang::sym(seq),
-                                                            pass_y$POSITION)) %>%
-                dplyr::filter(!!rlang::sym("SNP_STRING") != gl_substring) %>%
+                                                            pass_y$POSITION), 
+                              POSITION = ifelse(is.null(pos_range_max),
+                                                TRUE,
+                                                !any(pos_range_max<pass_y$POSITION))) %>%
+                dplyr::filter(!!rlang::sym("SNP_STRING") != gl_substring, !!rlang::sym("POSITION")) %>%
                 dplyr::group_by(!!rlang::sym("SNP_STRING")) %>%
                 dplyr::mutate(STRING_COUNT = n()) %>%
                 dplyr::filter(!!rlang::sym("STRING_COUNT") >= min_seqs)
@@ -591,6 +611,22 @@ findNovelAlleles <- function(data, germline_db,
     }
     out_df$germline_imgt_count <- getDbMatch(out_df$germline_imgt)
     out_df$unmutated_freq <- out_df$unmutated_count/out_df$germline_call_count
+    
+    dup_novel_imgt <- which(duplicated(out_df[['novel_imgt']]) & !is.na(out_df[['polymorphism_call']]))
+    dup_novel <- which(out_df[['novel_imgt']] %in% out_df[['novel_imgt']][dup_novel_imgt])
+    
+    if (length(dup_novel) > 0 ) {
+        message("Duplicated polymorphism(s) found!. See the field 'note' in your results for more details.")
+        for (i in dup_novel) {
+            this_polymorphism <- out_df[['polymorphism_call']][i]
+            this_novel_imgt <- out_df[['novel_imgt']][i]
+            other <- which(out_df[['novel_imgt']] == this_novel_imgt)
+            other_polymorphism_call <- setdiff(out_df[['polymorphism_call']][other],
+                                               this_polymorphism)
+            new_note <- paste0(other_polymorphism_call, collapse=", ")
+            out_df[['note']][i] <- paste0(out_df[['note']][i],". Same as: ", new_note)
+        }
+    }
 
     return(out_df)
 }
@@ -626,12 +662,15 @@ selectNovel <- function(novel, keep_alleles=FALSE) {
     novel <- filter(novel, !is.na(!!rlang::sym("novel_imgt")))
     
     if (keep_alleles) {
-        novel < novel %>% 
-            group_by(!!rlang::sym("germline_call"))
+        novel_set <- novel %>% 
+            group_by(!!rlang::sym("germline_call")) %>%
+            distinct(!!rlang::sym("novel_imgt"), .keep_all=TRUE) %>%
+            ungroup()
+    } else {
+        novel_set <- novel %>% 
+            distinct(!!rlang::sym("novel_imgt"), .keep_all=TRUE) %>%
+            ungroup()
     }
-    novel_set <- novel %>%
-        distinct(!!rlang::sym("novel_imgt"), .keep_all=TRUE) %>%
-        ungroup()
     
     return(novel_set)
 }
@@ -685,7 +724,10 @@ selectNovel <- function(novel, keep_alleles=FALSE) {
 #'                            the CDR3 and the two flanking conserved codons. Default
 #'                            is \code{junction}.
 #' @param    junction_length  number of junction nucleotides in the junction sequence.
-#'                            Default is \code{junction_length}.                        
+#'                            Default is \code{junction_length}.    
+#' @param    pos_range_max    Name of the column in \code{data} with the ending
+#'                            positions of the V alignment in the germline 
+#'                            (usually \code{v_germline_end}).                                               
 #' @param    ncol             number of columns to use when laying out the plots.
 #' @param    multiplot        whether to return one single plot (\code{TRUE}) or a list 
 #'                            with the three individual plots (\code{FALSE}).
@@ -700,6 +742,7 @@ selectNovel <- function(novel, keep_alleles=FALSE) {
 plotNovel <- function(data, novel_row, v_call="v_call", j_call="j_call",
                       seq="sequence_alignment",
                       junction="junction", junction_length="junction_length",
+                      pos_range_max=NULL,
                       ncol=1, multiplot=TRUE) {
     . = NULL
     
@@ -726,16 +769,16 @@ plotNovel <- function(data, novel_row, v_call="v_call", j_call="j_call",
     # have an appropriate range of mutations, and find the mutation
     # frequency of each position
     db_subset <- data %>%
-        select(!!!rlang::syms(c(seq, v_call, j_call, junction_length))) %>%
+        select(!!!rlang::syms(c(seq, v_call, j_call, junction_length, ifelse(is.null(pos_range_max), "",pos_range_max)))) %>%
         filter(grepl(names(germline),  .data[[v_call]], fixed=TRUE))
     pos_db <- db_subset %>%  
-        mutationRangeSubset(germline, mut_range, pos_range, seq=seq)
+        mutationRangeSubset(germline, mut_range, pos_range, seq=seq, pos_range_max=pos_range_max)
     if (nrow(pos_db) == 0) {
         warning(paste0("Insufficient sequences (",nrow(pos_db),") in desired mutational range."))
         return (invisible(NULL))
     }
     pos_db <- pos_db %>%
-        positionMutations(germline, pos_range,seq=seq)
+        positionMutations(germline, pos_range,seq=seq, pos_range_max=pos_range_max)
     pos_muts <- pos_db %>%
         group_by(!!rlang::sym("POSITION")) %>%
         mutate(PASS = mean(!!rlang::sym("OBSERVED")) >= min_frac) %>%
@@ -968,6 +1011,12 @@ inferGenotype <- function(data, germline_db=NA, novel=NA, v_call="v_call",
                           find_unmutated=TRUE) {
     
     . = NULL
+    
+    
+    # Check columns exist(can be NULL)
+    check <- checkColumns(data, c(v_call, seq))
+    if (check != TRUE) { stop(check) }
+    
     allele_calls = getAllele(data[[v_call]], first=FALSE, strip_d=FALSE)
     # Find the unmutated subset, if requested
     if (find_unmutated) {
@@ -1200,16 +1249,22 @@ genotypeFasta <- function(genotype, germline_db, novel=NA){
         }
     }
 
-    genotype$gene <- gsub("[Dd]\\*","*",genotype$gene)
+    genotype$gene <- getGene(genotype$gene, first = T, strip_d = T)
     g_names <- names(germline_db)
-    names(g_names) <- gsub("[Dd]\\*", "*", names(germline_db))
+    names(g_names) <- getAllele(names(germline_db), first = T, strip_d = T)
+
     table_calls <- mapply(paste, genotype$gene, strsplit(genotype$alleles, ","),
                          sep="*")
-    seqs <- germline_db[as.vector(g_names[unlist(table_calls)])]
-    if(sum(is.na(seqs)) > 0){
+    table_calls_names <- unlist(table_calls)
+    seq_names <- g_names[names(g_names) %in% table_calls_names]
+    seqs <- germline_db[seq_names]
+    not_found <- !table_calls_names %in% names(g_names)
+    
+    if ( any(not_found) ) {
         stop("The following genotype alleles were not found in germline_db: ",
-             paste(unlist(table_calls)[which(is.na(seqs))], collapse = ", "))
+             paste(table_calls_names[not_found], collapse = ", "))
     }
+    
     return(seqs)
 }
 
@@ -1853,7 +1908,8 @@ sortAlleles <- function(allele_calls, method=c("name", "position")) {
         mutate(FAMILY = getFamily(!! rlang::sym("SUBMITTED_CALLS"))) %>%
         # Determine the gene (exclude family); convert letters to numbers for sort
         mutate(GENE = getGene(!! rlang::sym("SUBMITTED_CALLS"))) %>%
-        mutate(GENE1 = gsub("[^-]+[-S]([^-\\*D]+).*","\\1",!! rlang::sym("SUBMITTED_CALLS"))) %>%
+        mutate(GENE1 = gsub("[^-]+([-S][^-\\*D]+).*","\\1",!! rlang::sym("SUBMITTED_CALLS"))) %>%
+        mutate(GENE1 = sub("^-","",!!rlang::sym("GENE1"))) %>%
         mutate(GENE1 = as.numeric(gsub("[^0-9]+", "99", !!rlang::sym("GENE1")))) %>%
         # If there is a second gene number, determine that, too
         mutate(GENE2 = gsub("[^-]+[-S][^-]+-?","",!! rlang::sym("GENE"))) %>%
@@ -1931,7 +1987,7 @@ cleanSeqs <- function(seqs) {
 # analyzed and a column indicating whether the position is mutated in
 # comparison to the germline
 #
-positionMutations <- function(data, germline, pos_range, seq="sequence_alignment"){
+positionMutations <- function(data, germline, pos_range, seq="sequence_alignment", pos_range_max = NULL){
     . = NULL
     pos_db = pos_range %>%
         length() %>%
@@ -1954,8 +2010,9 @@ positionMutations <- function(data, germline, pos_range, seq="sequence_alignment
                           !!rlang::sym("NT") != "")) %>%
         mutate(OBSERVED = (!!rlang::sym("NT") != "-" & 
                            !!rlang::sym("NT") != "." & 
-                           !!rlang::sym("NT") != ""))
-    if (any(pos_db$GERM_NT == "")) { 
+                           !!rlang::sym("NT") != "")) 
+    if(!is.null(pos_range_max)) pos_db <- pos_db %>% filter(!!rlang::sym("POSITION")<= !!rlang::sym(pos_range_max))
+    if (any(pos_db$GERM_NT == "") && !grepl("\\.", germline) ) { 
         stop("Empty ('') GERM_NT positions found. Check you are using gapped reference germlines.")
         }
     return(pos_db)
@@ -1984,14 +2041,24 @@ positionMutations <- function(data, germline, pos_range, seq="sequence_alignment
 # of mutation
 #
 mutationRangeSubset <- function(data, germline, mut_range, pos_range, 
-                                seq="sequence_alignment"){
+                                seq="sequence_alignment", pos_range_max = NULL){
     . = NULL
     pads = paste(rep("-", min(pos_range)-1), collapse="")
-    data$MUT_COUNT = data[[seq]] %>%
-        substring(min(pos_range), max(pos_range)) %>%
-        paste(pads, ., sep="") %>%
-        getMutatedPositions(germline) %>%
-        sapply(length)
+    if(is.null(pos_range_max)){
+        data$MUT_COUNT = data[[seq]] %>%
+            substring(min(pos_range), max(pos_range)) %>%
+            paste(pads, ., sep="") %>%
+            getMutatedPositions(germline) %>%
+            sapply(length)
+    }else{
+        data$MUT_COUNT =  data %>%
+            mutate(subseq = substring(!!rlang::sym(seq), min(pos_range), min(max(pos_range), !!rlang::sym(pos_range_max)))) %>%
+            pull(!!rlang::sym("subseq")) %>% 
+            paste(pads, ., sep="") %>%
+            getMutatedPositions(germline) %>%
+            sapply(length)
+    }
+    
     data = data %>%
         filter(!!rlang::sym("MUT_COUNT") %in% mut_range)
     return(data)

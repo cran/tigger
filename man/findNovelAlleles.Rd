@@ -17,6 +17,7 @@ findNovelAlleles(
   auto_mutrange = TRUE,
   mut_range = 1:10,
   pos_range = 1:312,
+  pos_range_max = NULL,
   y_intercept = 0.125,
   alpha = 0.05,
   j_max = 0.15,
@@ -67,6 +68,16 @@ be considered by the algorithm.}
 \item{pos_range}{range of IMGT-numbered positions that should be
 considered by the algorithm.}
 
+\item{pos_range_max}{Name of the column in \code{data} with the ending
+positions of the V alignment in the germline 
+(usually \code{v_germline_end}). The end of the alignment will
+be used to limit the range of positions to be 
+considered to count mutations. With \code{NULL} all 
+positions in the IMGT V region will be considered. In
+this case, in sequences where the V was trimmed 
+on the 3', mutated nucleotides could include nucleotides
+from the CDR3.}
+
 \item{y_intercept}{y-intercept threshold above which positions should be
 considered potentially polymorphic.}
 
@@ -78,7 +89,8 @@ threshold.}
 to a potential novel allele that are allowed to
 utilize to a particular combination of junction
 length and J gene. The closer to 1, the less strict 
-the filter for J gene diversity will be.}
+the filter for junction length and J gene diversity
+will be.}
 
 \item{min_frac}{minimum fraction of sequences that must have
 usable nucleotides in a given position for that
@@ -152,6 +164,9 @@ The following comments can appear in the \code{note} column:
 
 \itemize{
   \item \emph{Novel allele found}: A novel allele was detected.
+  \item \emph{Same as:}: The same novel allele sequence
+              has been identified multiple times. If this happens, the function
+              will also throw the message 'Duplicated polymorphism(s) found'.
   \item \emph{Plurality sequence too rare}: No sequence is frequent enough to pass 
         the J test (\code{j_max}).
   \item \emph{A J-junction combination is too prevalent}: Not enough J diversity (\code{j_max}).

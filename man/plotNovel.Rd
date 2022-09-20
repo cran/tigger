@@ -12,6 +12,7 @@ plotNovel(
   seq = "sequence_alignment",
   junction = "junction",
   junction_length = "junction_length",
+  pos_range_max = NULL,
   ncol = 1,
   multiplot = TRUE
 )
@@ -40,6 +41,10 @@ is \code{junction}.}
 
 \item{junction_length}{number of junction nucleotides in the junction sequence.
 Default is \code{junction_length}.}
+
+\item{pos_range_max}{Name of the column in \code{data} with the ending
+positions of the V alignment in the germline 
+(usually \code{v_germline_end}).}
 
 \item{ncol}{number of columns to use when laying out the plots.}
 

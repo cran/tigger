@@ -12,12 +12,16 @@ hasNonImgtGaps <- function (seq) {
 
 # Compare two IMGT gapped sequences and find AA mutations
 getMutatedAA <- function(ref_imgt, novel_imgt) {
-    if (grepl("N", ref_imgt)) {
-        stop("Unexpected N in ref_imgt")
+    
+    n_ref <- grepl("N", ref_imgt)
+    if (any(n_ref)) {
+        warning(sum(n_ref)," Ns found in ref_imgt")
     }     
-    if (grepl("N", novel_imgt)) {
-        stop("Unexpected N in novel_imgt")
-    }          
+    
+    n_novel <- grepl("N", novel_imgt)
+    if (any(n_novel)) {
+        warning(sum(n_novel)," Ns found in novel_imgt")
+    }         
     
     if (hasNonImgtGaps(ref_imgt)) {
         warning("Non IMGT gaps found in ref_imgt")
@@ -26,7 +30,7 @@ getMutatedAA <- function(ref_imgt, novel_imgt) {
     if (hasNonImgtGaps(novel_imgt)) {
         warning("Non IMGT gaps found in novel_imgt")
     }
-    
+
     ref_imgt <- strsplit(alakazam::translateDNA(ref_imgt),"")[[1]]
     novel_imgt <- strsplit(alakazam::translateDNA(novel_imgt),"")[[1]]
     mutations <- c()
@@ -156,6 +160,14 @@ generateEvidence <- function(data, novel, genotype, genotype_db,
     # Find closest reference
     .findClosestReference <- function(seq, allele_calls, ref_germ, 
                                       exclude_self=F, multiple=F) {
+        
+        # filter `ref_germ`, use only same gene segment as `seq`
+        diff_calls <- sub("[0-9]+$","",getFamily(names(ref_germ))) != sub("[0-9]+$","",getFamily(names(seq)))
+        if (sum(diff_calls) > 0) {
+            allele_calls <- allele_calls[allele_calls %in% names(ref_germ[diff_calls]) == FALSE]
+            ref_germ <- ref_germ[!diff_calls]   
+        } 
+        
         closest <- getMutCount(seq,
                                paste(allele_calls, collapse=","),
                                ref_germ)

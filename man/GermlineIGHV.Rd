@@ -12,7 +12,7 @@ to stripped-down IMGT allele names (e.g. "IGHV1-18*01").
 \description{
 A \code{character} vector of all human IGHV germline gene segment alleles
 in IMGT/GENE-DB (2019-06-01, 372 alleles). 
-See IMGT data updates: http://www.imgt.org/IMGTgenedbdoc/dataupdates.html.
+See IMGT data updates: https://www.imgt.org/IMGTgenedbdoc/dataupdates.html.
 }
 \references{
 \enumerate{

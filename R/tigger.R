@@ -67,9 +67,8 @@
 #'                          bind_cols bind_rows combine inner_join
 #'                          filter select arrange
 #'                          group_by ungroup
-#'                          mutate transmute
-#'                          rename summarise
-#'                          slice
+#'                          mutate pull rename slice
+#'                          summarise transmute
 #' @importFrom  foreach     foreach %dopar% registerDoSEQ
 #' @importFrom  graphics    plot
 #' @importFrom  gridExtra   arrangeGrob
@@ -78,7 +77,6 @@
 #' @importFrom  lazyeval    interp
 #' @importFrom  parallel    clusterEvalQ clusterExport makeCluster stopCluster
 #' @importFrom  rlang       .data := sym syms
-#' @importFrom  shazam      calcObservedMutations
 #' @importFrom  stats       na.omit setNames ecdf sd cor cov median mad
 #'                          confint lm
 #' @importFrom  stringi     stri_length stri_detect_fixed stri_replace_all_regex
