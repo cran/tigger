@@ -1,3 +1,7 @@
+#' @keywords internal
+#' @aliases tigger-package
+"_PACKAGE"
+
 # Project documentation for tigger
 
 #' tigger
@@ -82,14 +86,12 @@
 #' @importFrom  stringi     stri_length stri_detect_fixed stri_replace_all_regex
 #'                          stri_sub stri_sub<- stri_trans_toupper
 #' @importFrom  tidyr       gather spread unnest
+#' @importFrom  utils       citation
 NULL
 
 # Package loading actions
 .onAttach <- function(libname, pkgname) {
-    msg <- paste("As of v1.0.0 the AIRR Rearrangement schema is now the default file format.",
-                 "A description of the standard is available at https://docs.airr-community.org.",
-                 "The legacy Change-O format is supported through arguments to each function",
-                 "that allow the input column names to be explicitly defined.",
-                 sep="\n")
+    msg <- citation(pkgname)
+    msg <-paste(c(format(msg,"citation")),collapse="\n\n")
     packageStartupMessage(msg)
 }
