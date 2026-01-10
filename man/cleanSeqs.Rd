@@ -13,7 +13,7 @@ cleanSeqs(seqs)
 A modified vector of nucleotide sequences.
 }
 \description{
-\code{cleanSeqs} capitalizes nucleotides and replaces all characters 
+\code{cleanSeqs} capitalizes nucleotides and replaces all characters
 besides \code{c("A", "C", "G", "T", "-", ".")} with \code{"N"}.
 }
 \examples{

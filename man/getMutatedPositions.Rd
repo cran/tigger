@@ -12,9 +12,9 @@ getMutatedPositions(
 )
 }
 \arguments{
-\item{samples}{vector of strings respresenting aligned sequences}
+\item{samples}{vector of strings representing aligned sequences}
 
-\item{germlines}{vector of strings respresenting aligned sequences
+\item{germlines}{vector of strings representing aligned sequences
 to which \code{samples} will be compared. If only
 one string is submitted, it will be used for all
 \code{samples}.}

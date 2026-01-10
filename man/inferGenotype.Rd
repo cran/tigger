@@ -34,7 +34,7 @@ Details.}
 \item{v_call}{column in \code{data} with V allele calls.
 Default is \code{"v_call"}.}
 
-\item{seq}{name of the column in \code{data} with the 
+\item{seq}{name of the column in \code{data} with the
 aligned, IMGT-numbered, V(D)J nucleotide sequence.
 Default is \code{sequence_alignment}.}
 
@@ -54,24 +54,24 @@ if \code{allele_calls} only represent
 unmutated samples.}
 }
 \value{
-A \code{data.frame} of alleles denoting the genotype of the subject containing 
+A \code{data.frame} of alleles denoting the genotype of the subject containing
 the following columns:
-          
+
 \itemize{
   \item \code{gene}: The gene name without allele.
   \item \code{alleles}: Comma separated list of alleles for the given \code{gene}.
-  \item \code{counts}: Comma separated list of observed sequences for each 
+  \item \code{counts}: Comma separated list of observed sequences for each
         corresponding allele in the \code{alleles} list.
   \item \code{total}: The total count of observed sequences for the given \code{gene}.
-  \item \code{note}: Any comments on the inferrence.
+  \item \code{note}: Any comments on the inference.
 }
 }
 \description{
 \code{inferGenotype} infers an subject's genotype using a frequency method.
-The genotype is inferred by finding the minimum number set of alleles that 
-can explain the majority of each gene's calls. The most common allele of 
-each gene is included in the genotype first, and the next most common allele 
-is added until the desired fraction of alleles can be explained. In this 
+The genotype is inferred by finding the minimum number set of alleles that
+can explain the majority of each gene's calls. The most common allele of
+each gene is included in the genotype first, and the next most common allele
+is added until the desired fraction of alleles can be explained. In this
 way, mistaken allele calls (resulting from sequences which
 by chance have been mutated to look like another allele) can be removed.
 }
@@ -83,7 +83,7 @@ not available. Calls containing multiple alleles are treated as
 belonging to all groups. If \code{novel} is provided, all
 sequences that are assigned to the same starting allele as any
 novel germline allele will have the novel germline allele appended
-to their assignent prior to searching for unmutated sequences.
+to their assignment prior to searching for unmutated sequences.
 }
 \note{
 This method works best with data derived from blood, where a large
@@ -99,6 +99,6 @@ inferGenotype(AIRRDb, germline_db=SampleGermlineIGHV, novel=SampleNovel,
 \seealso{
 \link{plotGenotype} for a colorful visualization and
          \link{genotypeFasta} to convert the genotype to nucleotide sequences.
-         See \link{inferGenotypeBayesian} to infer a subject-specific genotype 
+         See \link{inferGenotypeBayesian} to infer a subject-specific genotype
          using a Bayesian approach.
 }

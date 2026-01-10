@@ -23,7 +23,7 @@ that were in the input.
 selects only the rows containing unique, novel alleles.
 }
 \details{
-If, for instance, subject has in his genome \code{IGHV1-2*02} and a novel 
+If, for instance, subject has in his genome \code{IGHV1-2*02} and a novel
 allele equally close to \code{IGHV1-2*02} and \code{IGHV1-2*05}, the novel allele may be
 detected by analyzing sequences that best align to either of these alleles.
 If \code{keep_alleles} is \code{TRUE}, both polymorphic allele calls will

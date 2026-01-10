@@ -9,7 +9,7 @@ getMutCount(samples, allele_calls, germline_db)
 \arguments{
 \item{samples}{vector of IMGT-gapped sample V sequences}
 
-\item{allele_calls}{vector of strings respresenting Ig allele calls for
+\item{allele_calls}{vector of strings representing Ig allele calls for
 the sequences in \code{samples}, where multiple
 calls are separated by a comma}
 
@@ -23,7 +23,7 @@ A list equal in length to \code{samples}, containing the Hamming
 }
 \description{
 \code{getMutCount} takes a set of nucleotide sequences and their allele calls
-and determines the distance between that seqeunce and any germline alleles
+and determines the distance between that sequence and any germline alleles
 contained within the call
 }
 \examples{

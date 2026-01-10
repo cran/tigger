@@ -7,7 +7,7 @@
 readIgFasta(fasta_file, strip_down_name = TRUE, force_caps = TRUE)
 }
 \arguments{
-\item{fasta_file}{fasta-formatted file of immunoglobuling sequences.}
+\item{fasta_file}{fasta-formatted file of immunoglobulin sequences.}
 
 \item{strip_down_name}{if \code{TRUE}, will extract only the allele name
 from the strings fasta file's sequence names.}
@@ -16,7 +16,7 @@ from the strings fasta file's sequence names.}
 uppercase.}
 }
 \value{
-Named vector of strings respresenting Ig alleles.
+Named vector of strings representing Ig alleles.
 }
 \description{
 \code{readIgFasta} reads a fasta-formatted file of immunoglobulin (Ig)

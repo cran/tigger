@@ -7,11 +7,11 @@
 insertPolymorphisms(sequence, positions, nucleotides)
 }
 \arguments{
-\item{sequence}{starting nucletide sequence.}
+\item{sequence}{starting nucleotide sequence.}
 
 \item{positions}{numeric vector of positions which to be changed.}
 
-\item{nucleotides}{character vector of nucletides to which to change the
+\item{nucleotides}{character vector of nucleotides to which to change the
 positions.}
 }
 \value{
@@ -22,6 +22,6 @@ A sequence with the desired nucleotides in the provided locations.
 provided sequence.
 }
 \examples{
-insertPolymorphisms("HUGGED", c(1, 6, 2), c("T", "R", "I")) 
+insertPolymorphisms("HUGGED", c(1, 6, 2), c("T", "R", "I"))
 
 }

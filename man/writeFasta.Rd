@@ -18,7 +18,7 @@ if not between 1 and 255, width with be infinite.}
 appended to \code{file} instead of overwriting it}
 }
 \value{
-A named vector of strings respresenting Ig alleles.
+A named vector of strings representing Ig alleles.
 }
 \description{
 \code{writeFasta} writes a named vector of sequences to a file in fasta

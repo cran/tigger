@@ -7,18 +7,18 @@
 updateAlleleNames(allele_calls)
 }
 \arguments{
-\item{allele_calls}{vector of strings respresenting IGHV allele names.}
+\item{allele_calls}{vector of strings representing IGHV allele names.}
 }
 \value{
-Vector of strings respresenting updated IGHV allele names.
+Vector of strings representing updated IGHV allele names.
 }
 \description{
 \code{updateAlleleNames} takes a set of IGHV allele calls and replaces any
 outdated names (e.g. IGHV1-f) with the new IMGT names.
 }
 \note{
-IGMT has removed \code{IGHV2-5*10} and \code{IGHV2-5*07} as it has determined they
-are actually alleles \code{02} and \code{04}, respectively. The updated allele 
+IMGT has removed \code{IGHV2-5*10} and \code{IGHV2-5*07} as it has determined they
+are actually alleles \code{02} and \code{04}, respectively. The updated allele
 names are based on IMGT release 2014-08-4.
 }
 \examples{

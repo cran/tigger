@@ -3,7 +3,6 @@
 \docType{package}
 \name{tigger-package}
 \alias{tigger-package}
-\alias{_PACKAGE}
 \title{tigger: Infers Novel Immunoglobulin Alleles from Sequencing Data}
 \description{
 Infers the V genotype of an individual from immunoglobulin (Ig) repertoire sequencing data (AIRR-Seq, Rep-Seq). Includes detection of any novel alleles. This information is then used to correct existing V allele calls from among the sample sequences. Citations: Gadala-Maria, et al (2015) \doi{10.1073/pnas.1417683112}, Gadala-Maria, et al (2019) \doi{10.3389/fimmu.2019.00129}.
@@ -12,7 +11,7 @@ Infers the V genotype of an individual from immunoglobulin (Ig) repertoire seque
 Useful links:
 \itemize{
   \item \url{http://tigger.readthedocs.io}
-  \item Report bugs at \url{https://bitbucket.org/kleinstein/tigger/issues}
+  \item Report bugs at \url{https://github.com/immcantation/tigger/issues}
 }
 
 }

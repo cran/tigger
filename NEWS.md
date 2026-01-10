@@ -1,3 +1,18 @@
+Version 1.1.2: January 9, 2026
+-------------------------------------------------------------------------------
+
+General:
+
++ Development of `tigger` has moved to GitHub: https://github.com/immcantation/tigger.
+
+
+Version 1.1.1: August 14, 2024
+-------------------------------------------------------------------------------
+
+Documentation:
+
++ This is a documentation-only update to address changes in Read the Docs.
+
 Version 1.1.0:  October 10, 2023
 -------------------------------------------------------------------------------
 
@@ -116,7 +131,7 @@ Bug Fixes:
   
 New Features:
 
-+ Added a Bayesian approach to genotype inferrence as the 
++ Added a Bayesian approach to genotype inference as the 
   `inferGenotypeBayesian` function.
 + Added the function `generateEvidence` to build a complete evidence table
   from the results of `findNovelAlleles`, `inferGenotype`, 
@@ -195,7 +210,7 @@ Version 0.2.6:  July 01, 2016
 Version 0.2.5.999:  June 10, 2016
 -------------------------------------------------------------------------------
 
-+ Fixed a bug werein `findNovelAlleles()` was not running in parallel, even 
++ Fixed a bug wherein `findNovelAlleles()` was not running in parallel, even 
   when `nproc` > 1.
 + Changed default to `nproc=1` in `findNovelAlleles()`.
 

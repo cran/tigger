@@ -26,7 +26,7 @@ and personalized to the subject}
 \item{v_call}{name of the column in \code{data} with V allele
 calls. Default is \code{v_call}.}
 
-\item{seq}{name of the column in \code{data} with the 
+\item{seq}{name of the column in \code{data} with the
 aligned, IMGT-numbered, V(D)J nucleotide sequence.
 Default is SEQUENCE_IMGT}
 
@@ -38,15 +38,15 @@ the genotype_db sequences. Currently, only \code{"hammming"}
 realignment method, if needed. Hamming distance does
 not require a path to a tool.}
 
-\item{keep_gene}{string indicating if the gene (\code{"gene"}), 
+\item{keep_gene}{string indicating if the gene (\code{"gene"}),
 family (\code{"family"}) or complete repertoire
-(\code{"repertoire"}) assignments should be performed. 
-Use of \code{"gene"} increases speed by minimizing required number of 
+(\code{"repertoire"}) assignments should be performed.
+Use of \code{"gene"} increases speed by minimizing required number of
 alignments, as gene level assignments will be maintained when possible.}
 }
 \value{
-A modifed input \code{data.frame} containing the best allele call from 
-          among the sequences listed in \code{genotype_db} in the 
+A modified input \code{data.frame} containing the best allele call from
+          among the sequences listed in \code{genotype_db} in the
           \code{v_call_genotyped} column.
 }
 \description{
@@ -63,7 +63,7 @@ based on a simple alignment to the sample sequence.
 # Extract the database sequences that correspond to the genotype
 genotype_db <- genotypeFasta(SampleGenotype, SampleGermlineIGHV, novel=SampleNovel)
 
-# Use the personlized genotype to determine corrected allele assignments
+# Use the personalized genotype to determine corrected allele assignments
 output_db <- reassignAlleles(AIRRDb, genotype_db, v_call="v_call",
                              seq="sequence_alignment")
 

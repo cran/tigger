@@ -21,23 +21,23 @@ is \code{v_call}.}
 
 \item{mode}{one of \code{c("gene", "family", "allele")} defining the degree of
 specificity regarding allele calls when subsetting sequences.
-Determines how \code{data} will be split into subsets from 
-which the same number of sequences will be subsampled. See 
+Determines how \code{data} will be split into subsets from
+which the same number of sequences will be subsampled. See
 also \code{group}.}
 
-\item{min_n}{minimum number of observations to sample from each groupe. A group with 
+\item{min_n}{minimum number of observations to sample from each group. A group with
 less observations than the minimum is excluded.}
 
 \item{max_n}{maximum number of observations to sample for all \code{mode} groups.
-If \code{NULL}, it will be set automatically to the size of 
-the smallest group. If \code{max_n} is larger than the availabe 
-number of sequences for any \code{mode} group, if will be 
-automatically adjusted and the efective \code{max_n} used 
+If \code{NULL}, it will be set automatically to the size of
+the smallest group. If \code{max_n} is larger than the available
+number of sequences for any \code{mode} group, it will be
+automatically adjusted and the effective \code{max_n} used
 will be the size of the smallest \code{mode} group.}
 
 \item{group}{columns containing additional grouping variables, e.g. sample_id.
 These groups will be subsampled independently. If
-\code{max_n} is \code{NULL}, a \code{max_n} will be 
+\code{max_n} is \code{NULL}, a \code{max_n} will be
 automatically set for each \code{group}.}
 }
 \value{
@@ -46,15 +46,15 @@ Subsampled version of the input \code{data}.
 \description{
 \code{subsampleDb} will sample the same number of sequences for each gene, family
 or allele (specified with \code{mode}) in \code{data}. Samples or subjects can
-be subsampled indepently by setting \code{group}.
+be subsampled independent by setting \code{group}.
 }
 \details{
 \code{data} will be split into gene, allele or family subsets (\code{mode}) from
 which the same number of sequences will be subsampled. If \code{mode=gene},
-for each gene in the field \code{gene} from \code{data}, a maximum of 
+for each gene in the field \code{gene} from \code{data}, a maximum of
 \code{max_n} sequences will be subsampled. Input sequences
-that have multiple gene calls (ties), can be subsampled from any of their calls, 
-but these duplicated samplings will be removed, and the final 
+that have multiple gene calls (ties), can be subsampled from any of their calls,
+but these duplicated samplings will be removed, and the final
 subsampled \code{data} will contain unique rows.
 }
 \examples{

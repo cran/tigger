@@ -14,10 +14,10 @@ plotGenotype(
 )
 }
 \arguments{
-\item{genotype}{\code{data.frame} of alleles denoting a genotype, 
+\item{genotype}{\code{data.frame} of alleles denoting a genotype,
 as returned by \link{inferGenotype}.}
 
-\item{facet_by}{column name in \code{genotype} to facet the plot by. 
+\item{facet_by}{column name in \code{genotype} to facet the plot by.
 if \code{NULL}, then do not facet the plot.}
 
 \item{gene_sort}{string defining the method to use when sorting alleles.

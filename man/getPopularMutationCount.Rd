@@ -22,10 +22,10 @@ columns.}
 
 \item{germline_db}{named list of IMGT-gapped germline sequences.}
 
-\item{v_call}{name of the column in \code{data} with V allele calls. 
+\item{v_call}{name of the column in \code{data} with V allele calls.
 Default is \code{v_call}.}
 
-\item{seq}{name of the column in \code{data} with the 
+\item{seq}{name of the column in \code{data} with the
 aligned, IMGT-numbered, V(D)J nucleotide sequence.
 Default is \code{sequence_alignment}.}
 

@@ -3,7 +3,7 @@
 \docType{data}
 \name{SampleGenotype}
 \alias{SampleGenotype}
-\title{Example genotype inferrence results}
+\title{Example genotype inference results}
 \format{
 A \code{data.frame} where rows correspond to genes carried by an
 individual and columns lists the alleles of those genes and their counts.
@@ -17,8 +17,8 @@ IMGT/HighV-QUEST to IGHV1 family alleles.
 }
 \references{
 \enumerate{
-  \item Gadala-Maria, et al. (2015) Automated analysis of high-throughput B cell 
-        sequencing data reveals a high frequency of novel immunoglobulin V gene 
+  \item Gadala-Maria, et al. (2015) Automated analysis of high-throughput B cell
+        sequencing data reveals a high frequency of novel immunoglobulin V gene
         segment alleles. PNAS. 112(8):E862-70.
 }
 }

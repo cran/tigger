@@ -29,16 +29,16 @@ findNovelAlleles(
 \item{data}{\code{data.frame} containing repertoire data. See details.}
 
 \item{germline_db}{vector of named nucleotide germline sequences
-matching the V calls in \code{data}. These should be 
+matching the V calls in \code{data}. These should be
 the gapped reference germlines used to make the V calls.}
 
-\item{v_call}{name of the column in \code{data} with V allele calls. 
+\item{v_call}{name of the column in \code{data} with V allele calls.
 Default is \code{v_call}.}
 
-\item{j_call}{name of the column in \code{data} with J allele calls. 
+\item{j_call}{name of the column in \code{data} with J allele calls.
 Default is \code{j_call}.}
 
-\item{seq}{name of the column in \code{data} with the 
+\item{seq}{name of the column in \code{data} with the
 aligned, IMGT-numbered, V(D)J nucleotide sequence.
 Default is \code{sequence_alignment}.}
 
@@ -69,26 +69,26 @@ be considered by the algorithm.}
 considered by the algorithm.}
 
 \item{pos_range_max}{Name of the column in \code{data} with the ending
-positions of the V alignment in the germline 
+positions of the V alignment in the germline
 (usually \code{v_germline_end}). The end of the alignment will
-be used to limit the range of positions to be 
-considered to count mutations. With \code{NULL} all 
+be used to limit the range of positions to be
+considered to count mutations. With \code{NULL} all
 positions in the IMGT V region will be considered. In
-this case, in sequences where the V was trimmed 
+this case, in sequences where the V was trimmed
 on the 3', mutated nucleotides could include nucleotides
 from the CDR3.}
 
 \item{y_intercept}{y-intercept threshold above which positions should be
 considered potentially polymorphic.}
 
-\item{alpha}{alpha value used for determining whether the 
+\item{alpha}{alpha value used for determining whether the
 fit y-intercept is greater than the \code{y_intercept}
 threshold.}
 
 \item{j_max}{maximum fraction of sequences perfectly aligning
 to a potential novel allele that are allowed to
 utilize to a particular combination of junction
-length and J gene. The closer to 1, the less strict 
+length and J gene. The closer to 1, the less strict
 the filter for junction length and J gene diversity
 will be.}
 
@@ -108,36 +108,36 @@ additional evidence.
 The output contains the following columns:
 \itemize{
   \item \code{germline_call}: The input (uncorrected) V call.
-  \item \code{note}: Comments regarding the inferrence.
+  \item \code{note}: Comments regarding the inference.
   \item \code{polymorphism_call}: The novel allele call.
   \item \code{nt_substitutions}: Mutations identified in the novel allele, relative
         to the reference germline (\code{germline_call})
   \item \code{novel_imgt}: The novel allele sequence.
-  \item \code{novel_imgt_count}:  The number of times the sequence \code{novel_imgt} 
-        is found in the input data. Considers the subsequence of \code{novel_imgt} 
+  \item \code{novel_imgt_count}:  The number of times the sequence \code{novel_imgt}
+        is found in the input data. Considers the subsequence of \code{novel_imgt}
         in the \code{pos_range}.
-  \item \code{novel_imgt_unique_j}: Number of distinct J calls associated to \code{novel_imgt} 
-        in the input data. Considers the subsequence of \code{novel_imgt} in the \code{pos_range}.       
+  \item \code{novel_imgt_unique_j}: Number of distinct J calls associated to \code{novel_imgt}
+        in the input data. Considers the subsequence of \code{novel_imgt} in the \code{pos_range}.
   \item \code{novel_imgt_unique_cdr3}: Number of distinct CDR3 sequences associated
-        with \code{novel_imgt} in the input data. Considers the subsequence of \code{novel_imgt} 
-        in the \code{pos_range}.                                              
-  \item \code{perfect_match_count}: Final number of sequences retained to call the new 
-        allele. These are unique sequences that have V segments that perfectly match 
+        with \code{novel_imgt} in the input data. Considers the subsequence of \code{novel_imgt}
+        in the \code{pos_range}.
+  \item \code{perfect_match_count}: Final number of sequences retained to call the new
+        allele. These are unique sequences that have V segments that perfectly match
         the predicted germline in the \code{pos_range}.
   \item \code{perfect_match_freq}: \code{perfect_match_count / germline_call_count}
-  \item \code{germline_call_count}: The number of sequences with the \code{germline_call} 
+  \item \code{germline_call_count}: The number of sequences with the \code{germline_call}
         in the input data that were initially considered for the analysis.
-  \item \code{germline_call_freq}: The fraction of sequences with the \code{germline_call} 
-        in the input data initially considered for the analysis.              
+  \item \code{germline_call_freq}: The fraction of sequences with the \code{germline_call}
+        in the input data initially considered for the analysis.
   \item \code{germline_imgt}: Germline sequence for \code{germline_call}.
-  \item \code{germline_imgt_count}: The number of times the \code{germline_imgt} 
+  \item \code{germline_imgt_count}: The number of times the \code{germline_imgt}
         sequence is found in the input data.
   \item \code{mut_min}: Minimum mutation considered by the algorithm.
   \item \code{mut_max}: Maximum mutation considered by the algorithm.
   \item \code{mut_pass_count}: Number of sequences in the mutation range.
   \item \code{pos_min}: First position of the sequence considered by the algorithm (IMGT numbering).
   \item \code{pos_max}: Last position of the sequence considered by the algorithm (IMGT numbering).
-  \item \code{y_intercept}: The y-intercept above which positions were considered 
+  \item \code{y_intercept}: The y-intercept above which positions were considered
         potentially polymorphic.
   \item \code{y_intercept_pass}: Number of positions that pass the \code{y_intercept} threshold.
   \item \code{snp_pass}: Number of sequences that pass the \code{y_intercept} threshold and are
@@ -145,16 +145,16 @@ The output contains the following columns:
   \item \code{unmutated_count}: Number of unmutated sequences.
   \item \code{unmutated_freq}: Number of unmutated sequences over \code{germline_imgt_count}.
   \item \code{unmutated_snp_j_gene_length_count}: Number of distinct combinations
-        of SNP, J gene, and junction length.     
-  \item \code{snp_min_seqs_j_max_pass}: Number of SNPs that pass both the \code{min_seqs} 
+        of SNP, J gene, and junction length.
+  \item \code{snp_min_seqs_j_max_pass}: Number of SNPs that pass both the \code{min_seqs}
         and \code{j_max} thresholds.
-  \item \code{alpha}: Significance threshold to be used when constructing the 
+  \item \code{alpha}: Significance threshold to be used when constructing the
         confidence interval for the y-intercept.
-  \item \code{min_seqs}: Input \code{min_seqs}. The minimum number of total sequences 
-        (within the desired mutational range and nucleotide range) required 
+  \item \code{min_seqs}: Input \code{min_seqs}. The minimum number of total sequences
+        (within the desired mutational range and nucleotide range) required
         for the samples to be considered.
-  \item \code{j_max}: Input \code{j_max}. The maximum fraction of sequences perfectly 
-        aligning to a potential novel allele that are allowed to utilize to a particular 
+  \item \code{j_max}: Input \code{j_max}. The maximum fraction of sequences perfectly
+        aligning to a potential novel allele that are allowed to utilize to a particular
         combination of junction length and J gene.
   \item \code{min_frac}: Input \code{min_frac}. The minimum fraction of sequences that must
         have usable nucleotides in a given position for that position to be considered.
@@ -167,15 +167,15 @@ The following comments can appear in the \code{note} column:
   \item \emph{Same as:}: The same novel allele sequence
               has been identified multiple times. If this happens, the function
               will also throw the message 'Duplicated polymorphism(s) found'.
-  \item \emph{Plurality sequence too rare}: No sequence is frequent enough to pass 
+  \item \emph{Plurality sequence too rare}: No sequence is frequent enough to pass
         the J test (\code{j_max}).
   \item \emph{A J-junction combination is too prevalent}: Not enough J diversity (\code{j_max}).
   \item \emph{No positions pass y-intercept test}: No positions above \code{y_intercept}.
-  \item \emph{Insufficient sequences in desired mutational range}: 
+  \item \emph{Insufficient sequences in desired mutational range}:
         \code{mut_range} and \code{pos_range}.
-  \item \emph{Not enough sequences}: Not enough sequences in the desired mutational 
+  \item \emph{Not enough sequences}: Not enough sequences in the desired mutational
         range and nucleotide range (\code{min_seqs}).
-  \item \emph{No unmutated versions of novel allele found}: All observed variants of the 
+  \item \emph{No unmutated versions of novel allele found}: All observed variants of the
         allele are mutated.
 }
 }
@@ -212,5 +212,5 @@ selectNovel(novel)
 \link{plotNovel} to visualize the data supporting any
 novel alleles hypothesized to be present in the data and
 \link{inferGenotype} and \link{inferGenotypeBayesian} to determine if the novel alleles are frequent
-enought to be included in the subject's genotype.
+enough to be included in the subject's genotype.
 }
