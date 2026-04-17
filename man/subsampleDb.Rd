@@ -58,6 +58,7 @@ but these duplicated samplings will be removed, and the final
 subsampled \code{data} will contain unique rows.
 }
 \examples{
+set.seed(1)
 subsampleDb(AIRRDb)
 
 }

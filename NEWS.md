@@ -1,3 +1,19 @@
+
+Version 1.1.3: April 13, 2026
+-------------------------------------------------------------------------------
+
+Bug Fixes:
+
++ Updated `plotNovel` to display integer x-axis labels in the mutation count plots.
+
++ Fixed `findNovelAlleles` to correctly dereference the `pos_range_max` column
+  name when filtering SNP positions.
+
+Documentation:
+
++ Updated example for `subsampleDb` to use `set.seed` for reproducibility.
+
+
 Version 1.1.2: January 9, 2026
 -------------------------------------------------------------------------------
 
@@ -120,7 +136,7 @@ Version 0.3.0 October 3, 2018
 
 Bug Fixes:
 
-+ Fixed a bug in `reassignAlleles` occuring with single match genotypes.
++ Fixed a bug in `reassignAlleles` occurring with single match genotypes.
 + Fixed `selectNovel` improperly removing all identical novel alleles, rather 
   than keeping a single entry.
 + `genotypeFasta` will now retain IMGT-numbering spacers as `.` characters

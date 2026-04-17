@@ -31,7 +31,7 @@ aligned, IMGT-numbered, V(D)J nucleotide sequence.
 Default is SEQUENCE_IMGT}
 
 \item{method}{method to use when realigning sequences to
-the genotype_db sequences. Currently, only \code{"hammming"}
+the genotype_db sequences. Currently, only \code{"hamming"}
 (for Hamming distance) is implemented.}
 
 \item{path}{directory containing the tool used in the

@@ -38,7 +38,7 @@ print(geno_bayesian)
 plotGenotype(geno_bayesian, text_size=10)
 
 ## ----eval=TRUE, warning=FALSE-------------------------------------------------
-# Use the personlized genotype to determine corrected allele assignments
+# Use the personalized genotype to determine corrected allele assignments
 # Updated genotype will be placed in the v_call_genotyped column
 sample_db <- reassignAlleles(AIRRDb, genotype_db)
 
@@ -50,7 +50,7 @@ not_in_genotype <- sample_db$v_call %>%
     unique() %>%
     setdiff(names(genotype_db))
 
-# Determine the fraction of calls that were ambigious before/after correction
+# Determine the fraction of calls that were ambiguous before/after correction
 # and the fraction that contained original calls to non-genotype alleles. Note
 # that by design, only genotype alleles are allowed in "after" calls.
 data.frame(Ambiguous=c(mean(grepl(",", sample_db$v_call)),
