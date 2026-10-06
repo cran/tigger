@@ -10,7 +10,7 @@ Infers the V genotype of an individual from immunoglobulin (Ig) repertoire seque
 \seealso{
 Useful links:
 \itemize{
-  \item \url{http://tigger.readthedocs.io}
+  \item \url{https://tigger.readthedocs.io}
   \item Report bugs at \url{https://github.com/immcantation/tigger/issues}
 }
 
@@ -20,10 +20,12 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Susanna Marquez \email{susanna.marquez@yale.edu}
   \item Daniel Gadala-Maria \email{daniel.gadala-maria@yale.edu}
   \item Moriah Cohen \email{moriah.cohen@biu.ac.il}
+  \item Ayelet Peres \email{ayelet.peres@yale.edu}
   \item Jason Vander Heiden \email{jason.vanderheiden@gmail.com}
-  \item Gur Yaari \email{gur.yaari@biu.ac.il}
+  \item Gur Yaari \email{gur.yaari@yale.edu}
   \item Steven Kleinstein \email{steven.kleinstein@yale.edu} [copyright holder]
 }
 

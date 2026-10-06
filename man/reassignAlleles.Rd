@@ -11,7 +11,15 @@ reassignAlleles(
   seq = "sequence_alignment",
   method = "hamming",
   path = NA,
-  keep_gene = c("gene", "family", "repertoire")
+  keep_gene = c("gene", "family", "repertoire"),
+  trim_seq = FALSE,
+  overwrite = FALSE,
+  ignored_regex = "[\\\\.N-]",
+  treat_multigene_as_uncalled = FALSE,
+  top_k = NULL,
+  top_by = c("alphabetical", "mutation_count"),
+  strip_d = TRUE,
+  reassign_uncalled = TRUE
 )
 }
 \arguments{
@@ -43,11 +51,52 @@ family (\code{"family"}) or complete repertoire
 (\code{"repertoire"}) assignments should be performed.
 Use of \code{"gene"} increases speed by minimizing required number of
 alignments, as gene level assignments will be maintained when possible.}
+
+\item{trim_seq}{if \code{TRUE}, trim sample and germline sequences
+to the segment boundaries before calculating Hamming
+distance. Boundaries are determined from the segment
+prefix of \code{v_call}, such as \code{v_*},
+\code{d_*}, or \code{j_*} columns.}
+
+\item{overwrite}{if \code{TRUE}, replace \code{v_call} with reassigned
+calls instead of writing a \code{*_call_genotyped}
+column.}
+
+\item{ignored_regex}{regular expression indicating characters to ignore
+when comparing sequences. May also be \code{TRUE} to
+ignore nothing (every position counts), as used for
+D and J segments.}
+
+\item{treat_multigene_as_uncalled}{if \code{TRUE}, sequences whose call
+spans more than one gene are treated as uncalled and
+realigned against the whole genotype rather than kept
+at their first gene. Only applies when \code{keep_gene}
+is \code{"gene"} or \code{"repertoire"}.}
+
+\item{top_k}{maximum number of equally-best alleles to report per
+sequence. \code{NULL} (default) keeps all ties.}
+
+\item{top_by}{how to break ties when more than \code{top_k} alleles
+are equally close. \code{"alphabetical"} keeps the
+first \code{top_k} by name; \code{"mutation_count"}
+keeps all ties.}
+
+\item{strip_d}{if \code{TRUE} (default) remove the "D" from the end of
+gene annotations (denoting a duplicate gene in the locus)
+when grouping the \code{genotype_db} alleles by gene. If
+\code{FALSE}, the "D" is kept, so the genotype grouping
+and the sequence calls are matched consistently (use
+together with \code{genotypeFasta(strip_d=FALSE)}).}
+
+\item{reassign_uncalled}{if \code{TRUE} (default), sequences whose call is
+empty or \code{NA} are also realigned against the whole
+genotype. If \code{FALSE}, they are left unassigned.}
 }
 \value{
 A modified input \code{data.frame} containing the best allele call from
           among the sequences listed in \code{genotype_db} in the
-          \code{v_call_genotyped} column.
+          \code{*_call_genotyped} column, or in \code{v_call} when
+          \code{overwrite=TRUE}.
 }
 \description{
 \code{reassignAlleles} uses a subject-specific genotype to correct

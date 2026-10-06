@@ -10,6 +10,7 @@ plotGenotype(
   gene_sort = c("name", "position"),
   text_size = 12,
   silent = FALSE,
+  allele_col = "alleles",
   ...
 )
 }
@@ -29,6 +30,11 @@ determined by the final two numbers in the gene name.}
 
 \item{silent}{if \code{TRUE} do not draw the plot and just return the ggplot
 object; if \code{FALSE} draw the plot.}
+
+\item{allele_col}{name of the column in \code{genotype} holding the
+comma-separated alleles to plot. Defaults to
+\code{"alleles"}; set to \code{"genotyped_alleles"} to plot
+the most likely alleles from \link{inferGenotypeBayesian}.}
 
 \item{...}{additional arguments to pass to ggplot2::theme.}
 }
@@ -51,5 +57,5 @@ plotGenotype(geno_sub, facet_by="SUBJECT", gene_sort="pos")
 
 }
 \seealso{
-\link{inferGenotype}
+\link{inferGenotype}, \link{plotGenotypeConfidence}
 }

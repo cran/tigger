@@ -11,7 +11,8 @@ inferGenotypeBayesian(
   v_call = "v_call",
   seq = "sequence_alignment",
   find_unmutated = TRUE,
-  priors = c(0.6, 0.4, 0.4, 0.35, 0.25, 0.25, 0.25, 0.25, 0.25)
+  priors = c(0.6, 0.4, 0.4, 0.35, 0.25, 0.25, 0.25, 0.25, 0.25),
+  genotyped_alleles = FALSE
 )
 }
 \arguments{
@@ -54,6 +55,11 @@ by set of four numbers, with the unspecified final values
 assigned to \code{0}; e.g., the heterozygous case is
 \code{c(priors[1], priors[2], 0, 0)}. The prior for the
 homozygous distribution is fixed at \code{c(1, 0, 0, 0)}.}
+
+\item{genotyped_alleles}{if \code{TRUE}, add a \code{genotyped_alleles}
+column containing the most likely alleles based on
+the highest Bayesian zygosity likelihood. Default
+is \code{FALSE}.}
 }
 \value{
 A \code{data.frame} of alleles denoting the genotype of the subject with the log10
@@ -72,6 +78,8 @@ contains the following columns:
   \item \code{kt}: log10 likelihood that the \code{gene} is trizygous
   \item \code{kq}: log10 likelihood that the \code{gene} is quadrozygous.
   \item \code{k_diff}: log10 ratio of the highest to second-highest zygosity likelihoods.
+  \item \code{genotyped_alleles}: If requested, comma separated list of
+        alleles in the most likely genotype for the given \code{gene}.
 }
 }
 \description{

@@ -4,7 +4,13 @@
 \alias{genotypeFasta}
 \title{Return the nucleotide sequences of a genotype}
 \usage{
-genotypeFasta(genotype, germline_db, novel = NA)
+genotypeFasta(
+  genotype,
+  germline_db,
+  novel = NA,
+  include_unseen = FALSE,
+  strip_d = TRUE
+)
 }
 \arguments{
 \item{genotype}{\code{data.frame} of alleles denoting a genotype,
@@ -16,6 +22,16 @@ matching the alleles detailed in \code{genotype}.}
 \item{novel}{an optional \code{data.frame} containing putative
 novel alleles of the type returned by
 \link{findNovelAlleles}.}
+
+\item{include_unseen}{if \code{TRUE}, include germline database alleles for
+genes that are not present in \code{genotype}. For
+genes present in \code{genotype}, include only the
+genotyped alleles.}
+
+\item{strip_d}{if \code{TRUE} (default) remove the "D" from the end of
+gene annotations (denoting a duplicate gene in the locus)
+when matching genotype alleles to \code{germline_db}. If
+\code{FALSE}, alleles are matched exactly.}
 }
 \value{
 A named vector of strings containing the germline nucleotide
